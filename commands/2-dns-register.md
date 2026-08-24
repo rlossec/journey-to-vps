@@ -1,0 +1,58 @@
+# 2. Enregistrement DNS — commandes
+
+Objectif : **lire** ce qu’on a **écrit** dans la zone (types + TTL). La chaîne racine → TLD est l’étape 1.
+
+Domaine : `readresolve.tech`
+
+## Linux
+
+```bash
+dig A readresolve.tech
+dig AAAA readresolve.tech
+dig NS readresolve.tech
+dig MX readresolve.tech
+dig TXT readresolve.tech
+dig A www.readresolve.tech
+dig CNAME www.readresolve.tech
+```
+
+Tout d’un coup :
+
+```bash
+dig ANY readresolve.tech
+```
+
+(`ANY` est parfois filtré ; en cas de réponse vide, garder les requêtes par type.)
+
+Registrar / dates (pas le contenu de la zone) :
+
+```bash
+whois readresolve.tech
+```
+
+## Windows
+
+```powershell
+Resolve-DnsName -Name "readresolve.tech" -Type A
+Resolve-DnsName -Name "readresolve.tech" -Type AAAA
+Resolve-DnsName -Name "readresolve.tech" -Type NS
+Resolve-DnsName -Name "readresolve.tech" -Type MX
+Resolve-DnsName -Name "readresolve.tech" -Type TXT
+Resolve-DnsName -Name "www.readresolve.tech" -Type A
+Resolve-DnsName -Name "www.readresolve.tech" -Type CNAME
+```
+
+## Ce qu’on doit reconnaître
+
+| Type | Attendu ici |
+| --- | --- |
+| A | `54.36.100.9`, TTL 3600 |
+| AAAA | pas d’enregistrement |
+| NS | `dns13.ovh.net`, `ns13.ovh.net` |
+| MX | `mx4.mail.ovh.net` (prio 1), `mx3.mail.ovh.net` (prio 10) |
+| TXT | SPF `v=spf1 include:mx.ovh.com ~all` |
+| `www` | **A** vers la même IP — pas un CNAME |
+
+Vue d’ensemble externe : [dnschecker — tous les records](https://dnschecker.org/all-dns-records-of-domain.php?query=readresolve.tech&rtype=ALL&dns=dnsauth).
+
+La zone dans la **console OVH** : capture fournie par le formateur (ce que `dig` lit, c’est ce qu’on y a saisi).
