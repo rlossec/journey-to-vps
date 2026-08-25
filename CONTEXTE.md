@@ -21,7 +21,7 @@ Deux angles complémentaires, sur le **même** parcours :
 
 Le cadrage d’origine est dans `perimetre-formateur.md` (8 sections). Notre plan en **5 étapes** le regroupe, il ne le remplace pas : chaque point du formateur doit rester visible dans une étape.
 
-Avant les 5 étapes : une **intro courte** (vue d’ensemble du parcours, rôles des acteurs, ce qui se passe avant que le VPS reçoive la requête).
+Avant les 5 étapes : une **intro courte** en deux temps — (1) les **acteurs** sans cas d’étude, (2) le **cas d’étude** et le **plan** des 5 étapes.
 
 | Formateur | Notre plan |
 | --- | --- |
@@ -29,20 +29,20 @@ Avant les 5 étapes : une **intro courte** (vue d’ensemble du parcours, rôles
 | 2. Noms de domaine et DNS | 2. Enregistrement DNS |
 | 3. Propagation et résolution DNS | 1. Résolution DNS |
 | 4. Du DNS au réseau OVH | 3. Routage Internet |
-| 5. Intérieur de l’infra OVH | 3. Routage (chemin interne) + 4. Firewall OVH |
-| 6. Firewall du VPS | 4. Firewall VPS |
-| 7. Services à l’écoute et ports | 5. Apache — ports |
-| 8. Reverse proxy | 5. Apache — reverse proxy |
+| 5. Intérieur de l’infra OVH | 4. Infrastructure OVH |
+| 6. Firewall du VPS | 5. Notre configuration — firewall VPS |
+| 7. Services à l’écoute et ports | 5. Notre configuration — ports |
+| 8. Reverse proxy | 5. Notre configuration — reverse proxy |
 
 ## Périmètre de cette présentation
 
 Cinq grandes étapes, dans cet ordre (fil client : on tape l’URL, puis on explique comment c’est configuré) :
 
-1. **Résolution DNS** — résolveur récursif, serveurs autoritaires, cache, **propagation** (pourquoi deux utilisateurs peuvent avoir des réponses différentes).
-2. **Enregistrement DNS** — réservation du domaine, sous-domaines, zone DNS, IP publique du VPS, enregistrements (`A`, `AAAA`, `CNAME`, `MX` et `TXT` brièvement), TTL.
-3. **Routage Internet** — une fois l’IP connue, chemin jusqu’à OVH (**BGP** en concept seulement). Puis le chemin **dans** OVH : backbone, pare-feu de bordure, routeur de datacenter, VPS (le trafic n’arrive pas « directement » sur la machine).
-4. **Firewall** — d’abord **OVH** (anti-DDoS / HCAP, et le pare-feu de bordure), puis celui que **l’on configure** sur le VPS (filtrage, trafic entrant/sortant, politique par défaut, ordre des règles, intro `iptables`).
-5. **Services, ports, Apache** — sockets en écoute, interfaces publiques vs locales, ports ; puis **reverse proxy** Apache (frontend) vers le backend (le client ne parle qu’au proxy). Comparaison brève proxy forward vs reverse.
+1. **Résolution DNS** — on soumet un nom dans le navigateur : comment trouve-t-on l’IP ? (résolveur récursif, autoritaires, cache, **propagation**).
+2. **Enregistrement DNS** — d’où vient le nom : réservation, sous-domaines, zone DNS, IP publique du VPS, enregistrements (`A`, `AAAA`, `CNAME`, `MX` et `TXT` brièvement), TTL.
+3. **Routage Internet** — une fois l’IP connue, comment les paquets trouvent le chemin jusqu’à OVH (**BGP** en concept seulement).
+4. **Infrastructure OVH** — chemin **dans** OVH avant notre machine : HCAP / anti-DDoS, backbone, pare-feu de bordure, routeur de datacenter (le trafic n’arrive pas « directement » sur le VPS).
+5. **Notre configuration** — firewall du VPS (`iptables` : filtrage, entrant/sortant, politique par défaut, ordre des règles), ports et services en écoute, **reverse proxy** Apache (frontend → backend). Comparaison brève proxy forward vs reverse.
 
 Points du formateur à ne pas oublier **dans** ces étapes :
 

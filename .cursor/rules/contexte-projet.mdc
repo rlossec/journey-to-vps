@@ -5,21 +5,21 @@ alwaysApply: true
 
 # Contexte projet (CDA)
 
-Présentation formation CDA : fil d’un cas d’étude réel (schémas puis commandes).
+Présentation formation CDA : fil d’un cas d’étude réel
 
-- VPS formateur chez **OVH**, domaine **readresolve.tech**.
+- VPS chez **OVH**, domaine **readresolve.tech**.
 - Cadrage formateur : `perimetre-formateur.md` (8 sections). Notre plan en 5 étapes le **regroupe**, il ne l’élague pas.
 - Source de vérité : `CONTEXTE.md`.
 
 ## Déroulé
 
-Intro : `explanations/0-intro.md` (parcours complet, acteurs, OVH vs nous), puis :
+Intro : `explanations/0-intro.md` — (1) acteurs sans cas d’étude, (2) cas d’étude + plan, puis :
 
 1. Résolution DNS (cache, propagation)
 2. Enregistrement DNS (domaine, zone, IP publique, records, TTL)
-3. Routage Internet (BGP concept) **et chemin interne OVH** (backbone, edge FW, DC)
-4. Firewall OVH (HCAP / bordure) puis firewall VPS (`iptables`)
-5. Ports / sockets (pas seulement Apache), puis reverse proxy frontend → backend
+3. Routage Internet (BGP concept)
+4. Infrastructure OVH (HCAP, backbone, edge FW, DC)
+5. Notre configuration : firewall VPS (`iptables`), ports / sockets, reverse proxy frontend → backend
 
 ## Format
 
