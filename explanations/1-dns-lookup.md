@@ -1,20 +1,25 @@
 # 1. Résolution DNS
 
-On a une URL : `https://readresolve.tech`. Le navigateur ne sait pas encore où envoyer les paquets. Il lui faut une **adresse IP**.
+> **Contexte et objectif :**
+> On a une URL : `https://mbr-me.readresolve.tech`.
+> Le navigateur ne sait pas encore où envoyer les paquets. Il lui faut une **adresse IP**.
+> **Résoudre**, c’est obtenir : `readresolve.tech` → `54.36.100.9`
 
-**Résoudre**, c’est obtenir :
+> **Definition**
+>
+> **Résoudre un url**, c’est obtenir : `readresolve.tech` → `54.36.100.9`
 
-`readresolve.tech` → `54.36.100.9`
-
-Tant que cette IP n’est pas connue, il n’y a **ni** routage, **ni** firewall, **ni** Apache. C’est la première boîte du parcours.
-
-Scénario de cette étape : **sans cache**, ordinateur tout neuf (on vient d’emménager).
-
-L’enregistrement de la zone (comment cette IP a été déclarée) est l’**étape 2**. Ici on observe seulement la **lecture**.
-
-## Schéma — qui interroge qui
+## Théorie
 
 Le navigateur ne parcourt pas Internet tout seul. Il pose **une** question à un **résolveur récursif** (souvent celui du FAI, parfois `8.8.8.8` ou `1.1.1.1`). C’est ce résolveur qui enchaîne les serveurs.
+
+Pour bien comprendre la suite analysons l'url
+
+[Schema Découpage Url](../excalidraw/1-dns-lookup/1-1-url-explanations.excalidraw)
+
+[Schema Arbre Url](../excalidraw/1-dns-lookup/1-1-url-explanations.excalidraw)
+
+### 1. Diagramme de flux :
 
 ```mermaid
 sequenceDiagram
@@ -34,39 +39,53 @@ sequenceDiagram
   R-->>Nav: 54.36.100.9
 ```
 
+### 2. Les Serveurs DNS
+
+[Schema Resolution DNS](../excalidraw/1-dns-lookup/1-5-dns-lookup.excalidraw)
+
 Quatre rôles à distinguer :
 
-| Rôle | Question à laquelle il répond | Exemple ici |
-| --- | --- | --- |
-| **Résolveur récursif** | « Trouve-moi l’IP, je m’occupe du reste » | FAI, Google `8.8.8.8`, Cloudflare `1.1.1.1` |
-| **Racine (Root)** | « Qui gère ce TLD ? » | 13 identités **A** à **M**, des milliers d’instances dans le monde |
-| **TLD** | « Qui est autoritaire pour ce domaine ? » | `.tech` → `ns01.trs-dns.com`, … |
-| **Autoritaire** | « Quelle est **la** réponse pour ce nom ? » | `dns13.ovh.net` / `ns13.ovh.net` |
+| Rôle                   | Question à laquelle il répond               | Exemple ici                                                        |
+| ---------------------- | ------------------------------------------- | ------------------------------------------------------------------ |
+| **Résolveur récursif** | « Trouve-moi l’IP, je m’occupe du reste »   | FAI, Google `8.8.8.8`, Cloudflare `1.1.1.1`                        |
+| **Racine (Root)**      | « Qui gère ce TLD ? »                       | 13 identités **A** à **M**, des milliers d’instances dans le monde |
+| **TLD**                | « Qui est autoritaire pour ce domaine ? »   | `.tech` → `ns01.trs-dns.com`, …                                    |
+| **Autoritaire**        | « Quelle est **la** réponse pour ce nom ? » | `dns13.ovh.net` / `ns13.ovh.net`                                   |
 
 La racine **ne connaît pas** l’IP de `readresolve.tech`. Elle sait seulement où sont les serveurs `.tech`. Le TLD **ne connaît pas** forcément l’IP non plus : il pointe vers les serveurs de noms du domaine.
 
-## Chaîne réelle : `readresolve.tech`
+## Cas pratique
+
+> On imagine qu'on a aucun **cache**, ordinateur tout neuf (on vient d’emménager).
 
 Première requête, résolveur **vide**.
 
-1. Le résolveur interroge un serveur **racine**. Il ne commence pas forcément par A, puis B : en vrai c’est souvent une **course** (RTT / anycast). `dig +trace` en choisit un, pas forcément le plus proche.
-2. La racine répond : TLD **`.tech`** → entre autres `ns01.trs-dns.com` (`64.96.1.1`). Cette délégation `.tech` se met en cache, souvent longtemps.
-3. Le résolveur interroge ce TLD : qui est autoritaire pour `readresolve.tech` ?
-4. Le TLD répond : `dns13.ovh.net` et `ns13.ovh.net`. Cette délégation se met aussi en cache.
-5. Le serveur **autoritaire** répond enfin : **A** `readresolve.tech` → `54.36.100.9` (TTL observé : **3600** s).
+1. Le résolveur interroge un serveur **root**.
 
-```
-readresolve . tech
-     │         │
-     │         └── TLD → ns01.trs-dns.com …
-     └── nom   → dns13.ovh.net / ns13.ovh.net
-                      └── A → 54.36.100.9
-```
+   Le root **ne connaît pas** l’IP de `readresolve.tech`. Il sait seulement où sont les serveurs `.tech`.
 
-Schéma du groupe (conservé) : `excalidraw/dns-resolver.json`.  
-Schéma corrigé à projeter : `excalidraw/dns-resolver-corrige.json`.
+   **Question :** qui gère le `.tech` ?
 
-## Cache — on ne rejoue pas toute la chaîne à chaque clic
+   Le serveur root répond : TLD **`.tech`** → entre autres `ns01.trs-dns.com` (`64.96.1.1`).
+
+   > Cette délégation `.tech` se met en cache, souvent longtemps.
+
+   > Il ne commence pas forcément par A, puis B : en vrai c’est souvent une **course** (RTT / anycast).
+   > \*\*\*\*`dig +trace` en choisit un, pas forcément le plus proche.
+
+2. Le résolveur interroge ce TLD :
+
+   **Question :** qui est autoritaire pour `readresolve.tech` ?
+
+   Le TLD répond : `dns13.ovh.net` et `ns13.ovh.net`.
+
+   > Cette délégation se met aussi en cache.
+
+3. Le résolveur interroge le serveur autoritaire :
+
+   Le serveur **autoritaire** répond enfin : **A** `readresolve.tech` → `54.36.100.9`
+
+## Cache
 
 Avant d’interroger quiconque, on regarde si la réponse est **déjà là** :
 
@@ -91,8 +110,10 @@ Ce n’est pas « Internet qui met 48 h à se mettre à jour » : c’est surtou
 
 ## Questions à garder en tête
 
-- Qu’est-ce que la propagation DNS ?
-- Pourquoi deux utilisateurs peuvent-ils obtenir des réponses différentes ?
-- En quoi le cache améliore-t-il les performances ?
+- [x] Qu’est-ce que la propagation DNS ?
+- [x] Pourquoi deux utilisateurs peuvent-ils obtenir des réponses différentes ?
+- [x] En quoi le cache améliore-t-il les performances ?
 
-Une fois l’IP connue, le navigateur peut **router** vers `54.36.100.9` — étape 3. Mais d’abord : comment cette IP a-t-elle été **déclarée** ? Étape 2.
+## Transition
+
+Une fois l’IP connue, le navigateur peut **router** vers `54.36.100.9` — étape 3.
