@@ -12,11 +12,11 @@ Réserver le nom `readresolve.tech` ne suffit pas. Sans enregistrements, la cha�
 
 Trois objets distincts, souvent confondus :
 
-| Objet | Qu’est-ce que c’est | Qui le donne / le tient |
-| --- | --- | --- |
-| **Nom de domaine** | L’étiquette lisible (`readresolve.tech`) | On la **réserve** (registrar, ici via OVH) |
-| **IP publique du VPS** | L’adresse de la machine sur Internet (`54.36.100.9`) | **OVH** l’attribue au VPS à la création |
-| **Zone DNS** | La liste des enregistrements pour ce nom | On la **remplit** (console OVH). C’est sous notre contrôle |
+| Objet                  | Qu’est-ce que c’est                                  | Qui le donne / le tient                                    |
+| ---------------------- | ---------------------------------------------------- | ---------------------------------------------------------- |
+| **Nom de domaine**     | L’étiquette lisible (`readresolve.tech`)             | On la **réserve** (registrar, ici via OVH)                 |
+| **IP publique du VPS** | L’adresse de la machine sur Internet (`54.36.100.9`) | **OVH** l’attribue au VPS à la création                    |
+| **Zone DNS**           | La liste des enregistrements pour ce nom             | On la **remplit** (console OVH). C’est sous notre contrôle |
 
 L’IP n’est pas « le nom de domaine ». C’est l’adresse du VPS. Le record **A** copie cette IP dans la zone pour que les résolveurs sachent où envoyer le trafic web.
 
@@ -73,11 +73,11 @@ Chaque enregistrement porte un **TTL** (Time To Live) : combien de **secondes** 
 
 Valeurs observées sur `readresolve.tech` :
 
-| Record | TTL typique |
-| --- | --- |
-| A (`readresolve.tech`) | 3600 (1 h) |
-| NS, MX, A de `www` | 3600 |
-| TXT (SPF) | 600 (10 min) |
+| Record                 | TTL typique  |
+| ---------------------- | ------------ |
+| A (`readresolve.tech`) | 3600 (1 h)   |
+| NS, MX, A de `www`     | 3600         |
+| TXT (SPF)              | 600 (10 min) |
 
 C’est **nous** qui le choisissons (ou le registrar par défaut) **à l’écriture**. L’étape 1 a montré l’effet à la **lecture** : cache navigateur / OS / résolveur, et **propagation**.
 
@@ -90,10 +90,13 @@ D’où : un changement DNS **n’est pas immédiat partout**. Ce n’est pas «
 
 ## Questions à garder en tête
 
-- Pourquoi un domaine a-t-il besoin d’enregistrements DNS ?
-- D’où vient l’adresse IP ? Pourquoi identifie-t-elle **ce** VPS ?
-- Plusieurs noms de domaine peuvent-ils pointer vers la même IP ?
-- Que se passe-t-il si l’IP du VPS change ?
-- Pourquoi une modification DNS n’est-elle pas visible tout de suite ?
+- [ ] Qu’est-ce que la propagation DNS ?
+- [ ] Pourquoi deux utilisateurs peuvent-ils obtenir des réponses différentes ?
+- [ ] En quoi le cache améliore-t-il les performances ?
+- [ ] Pourquoi un domaine a-t-il besoin d’enregistrements DNS ?
+- [ ] D’où vient l’adresse IP ? Pourquoi identifie-t-elle **ce** VPS ?
+- [ ] Plusieurs noms de domaine peuvent-ils pointer vers la même IP ?
+- [ ] Que se passe-t-il si l’IP du VPS change ?
+- [ ] Pourquoi une modification DNS n’est-elle pas visible tout de suite ?
 
 L’IP est connue **et** déclarée. Le navigateur peut l’utiliser pour **trouver le chemin** jusqu’à OVH — étape 3.

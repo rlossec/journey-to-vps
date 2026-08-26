@@ -2,24 +2,17 @@
 
 L’étape 1 a donné une IP. L’étape 2 a expliqué comment elle a été **déclarée**. Le navigateur connaît maintenant `54.36.100.9`. Il n’a **pas** le plan du trajet : il envoie un paquet vers cette adresse, et le réseau se débrouille.
 
-**Router**, c’est faire suivre le paquet **saut par saut** jusqu’à la machine qui a cette IP. Chaque routeur ne voit que le prochain saut, pas tout le chemin.
-
-Deux questions du formateur, à garder jusqu’au bout :
-
-- Une fois l’IP connue, comment atteint-on le serveur ?
-- Le navigateur connaît-il la route complète ? **Non.**
-
 ## Sur Internet : des réseaux qui se passent le paquet
 
 Internet n’est pas un câble unique vers OVH. C’est un assemblage de **réseaux d’opérateurs** (FAI, OVH, transitaires…). Chaque réseau est un **système autonome** (AS) : il gère ses propres routeurs et ses propres adresses.
 
-**BGP** (Border Gateway Protocol), en une phrase : les opérateurs s’annoncent *« je sais joindre tel bloc d’IP »*. OVH annonce, entre autres, le préfixe qui contient `54.36.100.9`. Les FAI apprennent un chemin vers ce préfixe. On n’entre pas dans les messages BGP ni dans les tables.
+**BGP** (Border Gateway Protocol), en une phrase : les opérateurs s’annoncent _« je sais joindre tel bloc d’IP »_. OVH annonce, entre autres, le préfixe qui contient `54.36.100.9`. Les FAI apprennent un chemin vers ce préfixe. On n’entre pas dans les messages BGP ni dans les tables.
 
 Conséquence pédagogique : le navigateur ne calcule pas la route. Il envoie vers l’IP ; **les routeurs** choisissent le prochain saut d’après ce qu’ils ont appris (dont BGP). Deux clients (Free, Orange, 4G) peuvent emprunter des chemins **différents** pour la même IP.
 
 `ping` répond à une autre question : « la machine répond-elle, et en combien de temps ? » Ici, depuis un poste en France : ~9 ms, 0 % de perte. Ça dit que l’IP est **joignable** (ICMP). Ça ne dit pas que le site web marche (ports, firewall, Apache : étapes 4 et 5).
 
-## Voir le chemin : traceroute
+## Pratique
 
 `traceroute` / `tracert` envoie des sondes avec un **TTL IP** qui augmente. Chaque routeur qui expire le TTL signale « je suis là ». On obtient une **liste de sauts**, pas une carte officielle OVH.
 
@@ -54,10 +47,10 @@ Une fois le trafic dans le réseau OVH, il ne saute pas du premier routeur OVH �
 
 Pourquoi plusieurs couches : isoler les clients, absorber un flood **avant** qu’il n’atteigne une petite VM, ne pas exposer l’hyperviseur comme s’il était sur Internet nu. Rien de tout ça n’est configurable dans notre zone DNS ni dans Apache.
 
-| Côté Internet / OVH | Côté formation |
-| --- | --- |
-| Tables de routage, BGP, chemin jusqu’à OVH | — |
-| HCAP, backbone, bordure, routeur DC | Firewall du VPS (étape 4), Apache (étape 5) |
+| Côté Internet / OVH                        | Côté formation                              |
+| ------------------------------------------ | ------------------------------------------- |
+| Tables de routage, BGP, chemin jusqu’à OVH | —                                           |
+| HCAP, backbone, bordure, routeur DC        | Firewall du VPS (étape 4), Apache (étape 5) |
 
 DevTools → Réseau : on voit une requête vers `readresolve.tech`, une latence totale. On ne voit **aucun** saut. Même information que le navigateur : nom, puis IP, puis « ça a répondu » ou non.
 

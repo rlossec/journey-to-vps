@@ -1,25 +1,71 @@
 # 1. Résolution DNS
 
-> **Contexte et objectif :**
-> On a une URL : `https://mbr-me.readresolve.tech`.
-> Le navigateur ne sait pas encore où envoyer les paquets. Il lui faut une **adresse IP**.
-> **Résoudre**, c’est obtenir : `readresolve.tech` → `54.36.100.9`
-
-> **Definition**
->
-> **Résoudre un url**, c’est obtenir : `readresolve.tech` → `54.36.100.9`
-
 ## Théorie
 
-Le navigateur ne parcourt pas Internet tout seul. Il pose **une** question à un **résolveur récursif** (souvent celui du FAI, parfois `8.8.8.8` ou `1.1.1.1`). C’est ce résolveur qui enchaîne les serveurs.
+A l'étape précédente, on a accédé à `https://fr.wikipedia.org/wiki/Domain_Name_System`, on aurait tout aussi bien pu choisir `https://mbr-me.readresolve.tech`.Pour tout site, il va devoir transformer l'url en IP : Résoudre le nom de domaine.
 
-Pour bien comprendre la suite analysons l'url
+On imagine dans un premier temp qu'on vient d'emmenager, qu'on a acheté un nouvel ordinateur et qu'on consulte notre site que l'on vient de lancer à la seconde prêt.
+Un ensemble de coincidence tout a fait classique. (Humour)
+
+Notre navigateur via notre box va faire intervenir un Résolveur DNS (de notre FAI) qui aura la tâche de trouver l'IP associée à l'url que l'on a donné.
+
+Pour cela il va déjà analysé notre url et faire une requete DNS.
+
+### 0 - Compréhension d'url
+
+Pour bien comprendre la suite des étapes il faut bien analyser l'url et son découpage.
 
 [Schema Découpage Url](../excalidraw/1-dns-lookup/1-1-url-explanations.excalidraw)
 
-[Schema Arbre Url](../excalidraw/1-dns-lookup/1-1-url-explanations.excalidraw)
+```text
+On a plusieurs parties,
+- `.tech` correspond au **Top Level Domain** : TLD
+- `readresolve` correspond **au nom de domaine**
+- `mbr-me` enfin correspond à un sous domaine
+```
 
-### 1. Diagramme de flux :
+[Schema Arbre Url](../excalidraw/1-dns-lookup/1-2-url-tree.excalidraw)
+
+Si on prend l'exemple connu de google, on a cet arbre avec
+
+- en haut le root,
+- puis `.com` qui est l'extension la plus utilisé et donc le TLD ici.
+- puis le nom de domaine : `google`
+- et de multiples sous-domaines, qui représente les différences services google.
+
+Schema pour les 3 étapes à suivre :
+[Schema Resolution DNS](../excalidraw/1-dns-lookup/1-5-dns-lookup.excalidraw)
+
+### Etape 1 : Root Server
+
+Pour la première étape notre résolveur va se concentrer sur la terminaison.
+Son objectif, trouver le TLD server qui s'occupe de la terminaison `.tech`
+
+Il doit pour cela faire la demande à ce qu'on appelle les Root servers.
+Ils sont au nombre de 13 dans le monde en terme d'identité. Ils sont symbolisés par les lettres de A à M.
+
+Evidemment, pour chacun de ces 13 identités, ils existent des centaines d'instance dans le monde. Internet ne peut pas dépendre d'uniquement 13 entités.
+
+Parmi ces 13 root server, le plus rapide répondera donc à la requête DNS par l'ip du serveur TLD, c'est à dire ici celui qui gère le `.tech`. Les serveurs root n'ont pas d'autre informations.
+
+A la fin de l'étape retour donc au Résolveur DNS de notre FAI mais avec l'information ou l'ip du TLD responsable des `.tech`.
+
+### Etape 2 : TLD Server
+
+Evidemment maintenant qu'on a l'info du TLD Server, on va lui soumettre une requête, du type "Eh toi qui connait les .tech, tu saurais qui est responsable DNS de ce nom de domaine : `readresolve` ?
+Et il va nous répondre pas avec l'ip finale du VPS mais avec ce qu'on appelle le serveur autoritaire de notre nom de domaine. Comme notre VPS est à OVH, il s'agira d'un serveur DNS d'OVH.
+
+A la fin de l'étape retour donc au Résolveur DNS de notre FAI mais avec l'information ou l'ip du serveur autoritaire pour `readresolve.tech`.
+
+### Etape 3 : Serveur auritaire
+
+Et nous voilà à la dernière étape, on connait le serveur autoritaire qui lui a l'information de l'ip du VPS !
+
+Si on revient à notre url, on a pas parlé du sous domaine. En effet, ce n'est pas la responsabilité du Resolver DNS, on en parlera plus tard.
+
+### Brouillons
+
+#### 1. Diagramme de flux :
 
 ```mermaid
 sequenceDiagram
@@ -39,10 +85,6 @@ sequenceDiagram
   R-->>Nav: 54.36.100.9
 ```
 
-### 2. Les Serveurs DNS
-
-[Schema Resolution DNS](../excalidraw/1-dns-lookup/1-5-dns-lookup.excalidraw)
-
 Quatre rôles à distinguer :
 
 | Rôle                   | Question à laquelle il répond               | Exemple ici                                                        |
@@ -54,66 +96,67 @@ Quatre rôles à distinguer :
 
 La racine **ne connaît pas** l’IP de `readresolve.tech`. Elle sait seulement où sont les serveurs `.tech`. Le TLD **ne connaît pas** forcément l’IP non plus : il pointe vers les serveurs de noms du domaine.
 
-## Cas pratique
+## Pratique
 
-> On imagine qu'on a aucun **cache**, ordinateur tout neuf (on vient d’emménager).
+Allons un peu regarder via des commandes si on peut remplir notre schéma avec les données
 
-Première requête, résolveur **vide**.
+Une commande permet de suivre toutes les étapes de la résolution pour
 
-1. Le résolveur interroge un serveur **root**.
+```bash
+dig +trace readresolve.tech
+```
 
-   Le root **ne connaît pas** l’IP de `readresolve.tech`. Il sait seulement où sont les serveurs `.tech`.
+```
+; <<>> DiG 9.20.24-1ubuntu0.2-Ubuntu <<>> +trace readresolve.tech
+;; global options: +cmd
+.                       86366   IN      NS      e.root-servers.net.
+.                       86366   IN      NS      f.root-servers.net.
+.                       86366   IN      NS      g.root-servers.net.
+.                       86366   IN      NS      h.root-servers.net.
+.                       86366   IN      NS      i.root-servers.net.
+.                       86366   IN      NS      j.root-servers.net.
+.                       86366   IN      NS      k.root-servers.net.
+.                       86366   IN      NS      l.root-servers.net.
+.                       86366   IN      NS      m.root-servers.net.
+.                       86366   IN      NS      a.root-servers.net.
+.                       86366   IN      NS      b.root-servers.net.
+.                       86366   IN      NS      c.root-servers.net.
+.                       86366   IN      NS      d.root-servers.net.
+.                       86366   IN      RRSIG   NS 8 0 518400 20260908050000 20260826040000 57780 . U0SVQzV1Q05Q4r0zFT8ZucZmAR+VYExL4MqcfKGDu6phZV/rus3jZrmH mIYFFmp6BuJ0u43DOrrw2eSMSDaZNEFHgj2rbHNh+4QMA+/R+0oP7sc5 j1aCRerpoChqNABHAOlqGwkEM8DRBNIN2NBJEJQoR1kLvgE0j9zvE1do +O0F0gAVyYQEmq1fBJhvhhNtJLYlcrCmkwAJ166TwslGjmAhGX1PDHQv xrU+8N/PdqWNvN09PTSj1WvGJscQ7wduadDaIr6uWyEgXGHKoQw9fKco 62sjGvq7U3IS7U3ExE+lPCsgJcNmQaVQTwVnunCw9+RVMlt3i+Uyst9o F2YJiA==
+;; Received 525 bytes from 127.0.0.53#53(127.0.0.53) in 2 ms
 
-   **Question :** qui gère le `.tech` ?
+;; communications error to 192.58.128.30#53: timed out
+;; communications error to 192.58.128.30#53: timed out
+;; communications error to 192.58.128.30#53: timed out
+;; communications error to 199.7.83.42#53: timed out
+tech.                   172800  IN      NS      ns01.trs-dns.com.
+tech.                   172800  IN      NS      ns01.trs-dns.net.
+tech.                   172800  IN      NS      ns10.trs-dns.org.
+tech.                   172800  IN      NS      ns10.trs-dns.info.
+tech.                   86400   IN      DS      2185 13 2 E796AB04119E87F72A094522E281F7D125E730B990B638BE308133E2 F5512752
+tech.                   86400   IN      RRSIG   DS 8 1 86400 20260908050000 20260826040000 57780 . SC/qWpw0aKuhJX5x+ZJYkwOtgzVfUiHutUk4NENpD1uLwD9ByVC7zpjL hB0oXK6G4NxQiqsORhdsUkcvy4OYmgq58yNlMrjmjd2PFiUr2TLzOSM0 nSyHl5UF4sNEoq3Od6Ble3tGT1GMp3kVymmNyFyXsM+X10FdPJCPgOhY lKbbXEH/hNmKEgqqDDctnrX5LehuKBIJuQno5HOZ3tv1a55h4rjRDnFJ JElznvLqrntH/IiUBr7u9eVfoLlODbj31eq94CR3icVx6Kh77FhyfFBN utaSlyO9LNd+3HTdHs2bKAiu0NtcI4/leu047hAHQxUMmNJb7RHz7hPL DviBhg==
+;; Received 677 bytes from 2001:500:2d::d#53(d.root-servers.net) in 4 ms
 
-   Le serveur root répond : TLD **`.tech`** → entre autres `ns01.trs-dns.com` (`64.96.1.1`).
+;; communications error to 64.78.205.1#53: timed out
+readresolve.tech.       900     IN      NS      ns13.ovh.net.
+readresolve.tech.       900     IN      NS      dns13.ovh.net.
+readresolve.tech.       900     IN      DS      4496 8 2 2EF6CD16781522CF1FE57E87B7D9984358E32BE85B21F2C20BF4FF23 7584FB29
+readresolve.tech.       900     IN      RRSIG   DS 13 2 900 20260918030447 20260819104906 6357 tech. rgzAcXLxIzIMj3WBPFHRMUnNFqeozbXtePFTebPA2wYy2BMYMg+SDkuf vGJdluIcQB8OfarvyEf2QTKbU9muBg==
+;; Received 239 bytes from 2620:171:813:1534:8::1#53(ns10.trs-dns.org) in 6 ms
 
-   > Cette délégation `.tech` se met en cache, souvent longtemps.
-
-   > Il ne commence pas forcément par A, puis B : en vrai c’est souvent une **course** (RTT / anycast).
-   > \*\*\*\*`dig +trace` en choisit un, pas forcément le plus proche.
-
-2. Le résolveur interroge ce TLD :
-
-   **Question :** qui est autoritaire pour `readresolve.tech` ?
-
-   Le TLD répond : `dns13.ovh.net` et `ns13.ovh.net`.
-
-   > Cette délégation se met aussi en cache.
-
-3. Le résolveur interroge le serveur autoritaire :
-
-   Le serveur **autoritaire** répond enfin : **A** `readresolve.tech` → `54.36.100.9`
+readresolve.tech.       3600    IN      A       54.36.100.9
+readresolve.tech.       3600    IN      RRSIG   A 8 2 3600 20260911054305 20260812054305 2590 readresolve.tech. RI6UDGtAH7C7xuuE5AjszBzNRTGs94pR1ospbPgXLyS6P2vZ4cjCf8W0 im/4xy6AKuoWX+IEEqjKjOMDrucw2u30SN71beHXLTVgrYfphd7Ob/z4 UluahMPfGlaj7tbEvyW6yf9QAINB4ZbKxCf8EyZOlgV6TTx9mqbpesFH f8E=
+;; Received 265 bytes from 5.39.112.241#53(ns13.ovh.net) in 2 ms
+```
 
 ## Cache
 
-Avant d’interroger quiconque, on regarde si la réponse est **déjà là** :
+Maintenant revenons un peu sur notre cas particulier : nouvel appartement, nouvel ordinateur, nouveau site.
 
-1. Cache du **navigateur**
-2. Cache de l’**OS**
-3. Cache du **résolveur** (FAI / 8.8.8.8 / …)
-
-D’où la durée : le **TTL** (Time To Live) porté par l’enregistrement. Ici, 3600 s = 1 h pendant lesquelles un résolveur peut réutiliser `54.36.100.9` sans reposer la question à l’autoritaire.
+En vrai, la résolution DNS prend des raccourci. Pour quasi chaque intervenant, navigateur, OS, resolveur, les serveurs DNS, ils ont un cache qui peut contenir l'information et permettre d'éviter des étapes.
 
 Le cache **accélère** (moins de allers-retours) et **soulage** la racine et les TLD. Contrepartie : une modification DNS n’est pas visible partout au même moment.
 
-## Propagation
-
-**Propagation** : le temps que les caches expirent et que tout le monde revoie la **nouvelle** valeur.
-
-Deux utilisateurs peuvent avoir des réponses **différentes** si :
-
-- leurs résolveurs n’ont pas le même cache (ou pas le même TTL restant) ;
-- l’un a encore l’ancienne IP, l’autre a déjà la nouvelle.
-
-Ce n’est pas « Internet qui met 48 h à se mettre à jour » : c’est surtout le **TTL** (détail des types d’enregistrements à l’étape 2).
-
-## Questions à garder en tête
-
-- [x] Qu’est-ce que la propagation DNS ?
-- [x] Pourquoi deux utilisateurs peuvent-ils obtenir des réponses différentes ?
-- [x] En quoi le cache améliore-t-il les performances ?
-
 ## Transition
 
-Une fois l’IP connue, le navigateur peut **router** vers `54.36.100.9` — étape 3.
+Mais comment lorsqu'on créé son serveur et son site, on va communiquer l'information à ces DNS ?

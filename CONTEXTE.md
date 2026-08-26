@@ -81,7 +81,8 @@ Ici, on les **évoque de loin** uniquement quand c’est indispensable pour comp
 | `perimetre-formateur.md` | Cadrage d’origine du formateur (8 sections) |
 | `presentation_fr.md` | Fil de la présentation (brouillon de déroulé) |
 | `explanations/` | Théorie par étape |
-| `commands/` | Commandes d’expérimentation par étape |
+| `commands/` | Commandes d’atelier par étape (**sans** sorties) — par utilité, Linux / Windows |
+| `commands/response-analysis/` | Mêmes étapes : **commandes + réponses** (WSL / VPS / Windows) + analyse ligne à ligne |
 | `ressources/` | Liens, captures, références |
 | `excalidraw/` | Schémas |
 

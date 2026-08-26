@@ -1,41 +1,37 @@
 # Intro
 
-Quand on ouvre un site dans un navigateur, une page s’affiche. Entre le clic et le contenu, la requête traverse plusieurs systèmes — et la plupart **ne sont pas** le serveur web.
+## Evocation du cas d'étude
 
-Cette intro pose d’abord **qui intervient**, puis présente le **cas d’étude** et le **plan** des 5 étapes.
+Script :
 
-## 1. Les acteurs
+```
+Avec Dominga, Jonathan et Rayann on avait déjà parler du navigateur web et de son fonctionnement, cette fois on a essayer de vous montrer plus en détail comment à partir d’un simple url, on obtient un site web, on va essayer de vous faire comprendre les différents étapes et éléments qui interviennent à chaque fois qu'on consulte un site web.
+```
 
-Sans parler encore d’un domaine précis : qui fait quoi quand on visite un site ?
+```
+On va s'appuyer sur le VPS de la formation pour expérimenter au fur et à mesure. On essaiera d'aérer chaque partie un peu théorique par un peu de pratique.
 
-| Acteur                           | Rôle                                                             | Qui le maîtrise en général                                                           |
-| -------------------------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| Navigateur / `curl`              | Demande la page                                                  | Le client                                                                            |
-| Résolveur DNS                    | Cherche l’IP associée au nom                                     | FAI ou résolveur public (8.8.8.8, 1.1.1.1, …)                                        |
-| DNS autoritaire                  | Détient la « vérité » du domaine                                 | Serveurs de noms du registrar / hébergeur — **contenu** de la zone : l’admin du site |
-| Routage Internet                 | Fait suivre les paquets jusqu’au réseau de l’hébergeur           | Opérateurs (BGP, concept seulement)                                                  |
-| Infrastructure hébergeur         | Anti-DDoS, backbone, pare-feu de bordure, routeurs du datacenter | L’hébergeur                                                                          |
-| Firewall du serveur              | Accepter ou refuser selon des règles                             | L’admin du serveur                                                                   |
-| Serveur web (frontend / backend) | Écouter, proxifier, servir le contenu                            | L’admin du serveur                                                                   |
+Première expérience de notre voyage :
 
-Deux questions utiles dès maintenant :
+Accédons à la page `https://fr.wikipedia.org/wiki/Domain_Name_System`
 
-- Qu’est-ce qui appartient à **l’hébergeur** ?
-- Qu’est-ce qui est **sous le contrôle** de celui qui gère le site ?
+```
 
-Tant que le paquet n’a pas passé le firewall du serveur, **le serveur web n’a encore rien reçu**.
+## Explications globales des étapes
+
+Schémas avec responsabilités :
 
 ```mermaid
 flowchart TD
-  A["Navigateur / curl"] --> B["Résolveur DNS"]
-  B --> C["DNS autoritaire"]
-  C --> D["Routage Internet"]
+  A["Navigateur / curl"] --> B["DNS Resolver"]
+  B --> C["Authoritative DNS"]
+  C --> D["Internet Routing"]
   D --> E["HCAP anti-DDoS"]
-  E --> F["Routeur backbone OVH"]
-  F --> G["Pare-feu de bordure"]
-  G --> H["Routeur datacenter"]
-  H --> I["Firewall du VPS"]
-  I --> J["Apache frontend<br/>reverse proxy"]
+  E --> F["Backbone Router"]
+  F --> G["Edge Firewall"]
+  G --> H["Datacenter router"]
+  H --> I["VPS Firewall"]
+  I --> J["Reverse proxy"]
   J --> K["Apache backend"]
 
   subgraph internet["Internet"]
@@ -44,40 +40,30 @@ flowchart TD
     D
   end
 
-  subgraph ovh["Chez OVH — on ne configure pas ça"]
+  subgraph ovh["OVH Infrastructure"]
     E
     F
     G
     H
   end
 
-  subgraph nous["Notre VPS — sous notre contrôle"]
+  subgraph nous["Our VPS configuration"]
     I
     J
     K
   end
 ```
 
-## 2. Cas d’étude et plan
+On va découper ce voyage en 5 étapes :
 
-Fil concret de la présentation :
-
-| Élément               | Détail               |
-| --------------------- | -------------------- |
-| Hébergement           | VPS chez **OVH**     |
-| Domaine               | **readresolve.tech** |
-| IP publique (exemple) | `54.36.100.9`        |
-
-### Les 5 étapes
-
-1. **Résolution DNS** — on soumet un nom de domaine dans le navigateur : comment trouve-t-on l’IP ? (résolveur, autoritaires, cache, propagation)
-2. **Enregistrement DNS** — d’où vient ce nom ? Comment l’admin du site l’enregistre, déclare la zone, pointe vers l’IP publique (records, TTL)
-3. **Routage** — l’IP est connue : comment les paquets arrivent jusqu’au réseau OVH, puis dans le datacenter (BGP en concept, chemin interne OVH)
-4. **Infrastructure OVH** — ce qui filtre et achemine **chez OVH** avant notre machine (HCAP / anti-DDoS, backbone, pare-feu de bordure, routeur DC)
-5. **Notre configuration** — firewall du VPS (`iptables`), ports et services en écoute, reverse proxy Apache (frontend → backend)
+1. **Résolution DNS** — comment le nom devient `54.36.100.9`.
+2. **Enregistrement DNS** — comment on a déclaré ce lien (zone, records, TTL).
+3. **Routage** — comment les données trouvent le chemin jusqu'au VPS
+4. **Infrastructure OVH** - de même le chemin mais aussi les sécurités dans OVH
+5. **Configuration du VPS : Ports et Apache** : enfin l'arrivée dans le VPS et la configuration que l'on gère
 
 ## Questions directrices
 
-- [ ] Quels systèmes interviennent **avant** que le VPS reçoive la requête ?
-- [ ] Qu’est-ce qui appartient à **OVH** ?
-- [ ] Qu’est-ce qui est **sous notre contrôle** ?
+- [x] Quels systèmes interviennent **avant** que le VPS reçoive la requête ?
+- [x] Qu’est-ce qui appartient à **OVH** ?
+- [x] Qu’est-ce qui est **sous notre contrôle** ?
