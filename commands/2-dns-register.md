@@ -4,7 +4,11 @@ Objectif : **lire** ce qu’on a **écrit** dans la zone (types + TTL). La chaî
 
 Domaine : `readresolve.tech`
 
-## Linux
+Réponses et analyses : [`response-analysis/2-dns-register.md`](response-analysis/2-dns-register.md)
+
+## Lire les records de la zone (par type)
+
+### Linux
 
 ```bash
 dig A readresolve.tech
@@ -16,21 +20,7 @@ dig A www.readresolve.tech
 dig CNAME www.readresolve.tech
 ```
 
-Tout d’un coup :
-
-```bash
-dig ANY readresolve.tech
-```
-
-(`ANY` est parfois filtré ; en cas de réponse vide, garder les requêtes par type.)
-
-Registrar / dates (pas le contenu de la zone) :
-
-```bash
-whois readresolve.tech
-```
-
-## Windows
+### Windows
 
 ```powershell
 Resolve-DnsName -Name "readresolve.tech" -Type A
@@ -42,17 +32,34 @@ Resolve-DnsName -Name "www.readresolve.tech" -Type A
 Resolve-DnsName -Name "www.readresolve.tech" -Type CNAME
 ```
 
+## Infos registrar / dates (`whois`)
+
+Pas le contenu de la zone — registrar, dates, contacts.
+
+### Linux
+
+```bash
+whois readresolve.tech
+```
+
+### Windows
+
+```powershell
+# Si whois n’est pas installé : fiche registrar, ou WSL.
+whois readresolve.tech
+```
+
 ## Ce qu’on doit reconnaître
 
-| Type | Attendu ici |
-| --- | --- |
-| A | `54.36.100.9`, TTL 3600 |
-| AAAA | pas d’enregistrement |
-| NS | `dns13.ovh.net`, `ns13.ovh.net` |
-| MX | `mx4.mail.ovh.net` (prio 1), `mx3.mail.ovh.net` (prio 10) |
-| TXT | SPF `v=spf1 include:mx.ovh.com ~all` |
-| `www` | **A** vers la même IP — pas un CNAME |
+| Type  | Attendu ici                                               |
+| ----- | --------------------------------------------------------- |
+| A     | `54.36.100.9`, TTL 3600                                   |
+| AAAA  | pas d’enregistrement                                      |
+| NS    | `dns13.ovh.net`, `ns13.ovh.net`                           |
+| MX    | `mx4.mail.ovh.net` (prio 1), `mx3.mail.ovh.net` (prio 10) |
+| TXT   | SPF `v=spf1 include:mx.ovh.com ~all`                      |
+| `www` | **A** vers la même IP — pas un CNAME                      |
 
 Vue d’ensemble externe : [dnschecker — tous les records](https://dnschecker.org/all-dns-records-of-domain.php?query=readresolve.tech&rtype=ALL&dns=dnsauth).
 
-La zone dans la **console OVH** : capture fournie par le formateur (ce que `dig` lit, c’est ce qu’on y a saisi).
+La zone dans la **console OVH** : capture fournie par le formateur.

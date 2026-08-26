@@ -25,3 +25,25 @@
 10. 404
 
 https://www.ionos.fr/digitalguide/serveur/outils/commandes-netstat/
+
+## Linux / VPS
+
+### resolvectl
+
+`resolvectl status | head -20`
+
+**Réponse** :
+
+```
+Global
+         Protocols: -LLMNR -mDNS -DNSOverTLS DNSSEC=no/unsupported
+  resolv.conf mode: stub
+
+Link 2 (ens3)
+    Current Scopes: DNS
+         Protocols: +DefaultRoute -LLMNR -mDNS -DNSOverTLS DNSSEC=no/unsupported
+Current DNS Server: 213.186.33.99
+       DNS Servers: 213.186.33.99
+        DNS Domain: openstacklocal
+     Default Route: yes
+```

@@ -1,49 +1,66 @@
 # 5. Ports et Apache — commandes
 
-Objectif : **qui écoute**, sur quelle interface ; ce que voit l’extérieur ; le site répond bien en Apache.
+Objectif : **qui écoute**, sur quelle interface ; ce que voit l’extérieur ; reverse proxy.
 
-Cible : `readresolve.tech` / `54.36.100.9`. `ss` et la conf Apache : **sur le VPS** (`sudo`). `nmap` : vers **notre** VPS uniquement.
+Cible : `readresolve.tech` / `54.36.100.9`. `ss` et conf Apache : **sur le VPS**. `nmap` : vers **notre** VPS uniquement.
 
-## Sur le VPS — sockets
+Réponses et analyses : [`response-analysis/5-apache-server.md`](response-analysis/5-apache-server.md)
+
+## Lister les sockets en écoute
+
+### Linux
 
 ```bash
 sudo ss -tlnp
+sudo ss -tlnp | grep -E ':80|:443|:22|:64483|:90'
 ```
 
-`-t` TCP · `-l` listening · `-n` ports numériques · `-p` process.
+Repérer : `*:80` / `*:443` (public) vs `127.0.0.1:…` (local seulement).
 
-Repérer : `0.0.0.0:443` / `:80` (public) vs `127.0.0.1:…` (local seulement).
+### Windows
 
-Variante :
+Écoute **locale** du PC (pas le VPS) — pour comparer l’idée « qui écoute » :
 
-```bash
-sudo ss -tlnp | grep -E ':80|:443|:22'
+```powershell
+Get-NetTCPConnection -State Listen |
+  Select-Object LocalAddress, LocalPort, OwningProcess
 ```
 
-## Depuis un PC — ce que l’Internet voit
+## Voir ce que l’Internet reçoit (en-têtes)
 
-**Linux / Windows** (en-têtes, sans démonter HTTP) :
+### Linux
 
 ```bash
 curl -I https://readresolve.tech
 ```
 
-Attendu : `Server: Apache`, statut 200.
+### Windows
 
-Scan de **notre** machine (si `nmap` est installé) :
+```powershell
+curl.exe -I https://readresolve.tech
+```
+
+## Scanner les ports publics de notre VPS
+
+### Linux
 
 ```bash
 nmap -sV -p 22,80,443 54.36.100.9
 ```
 
-## Windows (sans `ss`)
+### Windows
 
 ```powershell
-Get-NetTCPConnection -State Listen |
-  Select-Object LocalAddress, LocalPort, OwningProcess
-curl.exe -I https://readresolve.tech
+nmap -sV -p 22,80,443 54.36.100.9
 ```
 
-## Apache (captures formateur / root)
+## Lire la conf Apache (VPS, sans modifier)
 
-Fichiers typiques : `/etc/apache2/sites-enabled/` · directives `ProxyPass` / `ProxyPassReverse` · `Listen 80` / `Listen 443`. On **montre** la conf du cas d’étude, on ne la réécrit pas ici.
+```bash
+sudo apache2ctl -S
+sudo apache2ctl -M
+ls -la /etc/apache2/sites-enabled/
+sudo grep -RniE 'ProxyPass|ProxyPassReverse|ServerName|VirtualHost|Listen' /etc/apache2/
+```
+
+Fichiers utiles : `ports.conf`, `sites-enabled/`, `mods-enabled/`, chemins certs dans le vhost SSL.

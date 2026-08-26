@@ -1,13 +1,30 @@
 # 3. Routage — commandes
 
-Objectif : l’IP est-elle **joignable**, et **par où** (approximativement) ? Pas le détail TCP/HTTP.
+Objectif : l’IP est-elle **joignable**, et **par où** (approximativement) ?
 
 Cible : `54.36.100.9` (`readresolve.tech`)
 
-## Linux
+Réponses et analyses : [`response-analysis/3-routage.md`](response-analysis/3-routage.md)
+
+## Tester la joignabilité (ping)
+
+### Linux
 
 ```bash
 ping -c 4 54.36.100.9
+```
+
+### Windows
+
+```powershell
+ping 54.36.100.9
+```
+
+## Voir le chemin approximatif (traceroute)
+
+### Linux
+
+```bash
 traceroute 54.36.100.9
 ```
 
@@ -17,16 +34,15 @@ Souvent plus parlant (sondes ICMP, comme Windows) :
 traceroute -I 54.36.100.9
 ```
 
-Variantes selon la distro : `tracepath 54.36.100.9` · `mtr 54.36.100.9` (vue temps réel).
+Variantes selon distro : `tracepath 54.36.100.9` · `mtr 54.36.100.9`
 
-## Windows
+### Windows
 
 ```powershell
-ping 54.36.100.9
 tracert 54.36.100.9
 ```
 
-Sans résoudre les noms (plus rapide, comme la capture de l’étape) :
+Sans résoudre les noms :
 
 ```powershell
 tracert -d 54.36.100.9
@@ -34,13 +50,11 @@ tracert -d 54.36.100.9
 
 ## Ce qu’on doit reconnaître
 
-| Observation | Lecture |
-| --- | --- |
-| Premier saut en `192.168.x.x` | Box / passerelle locale |
-| Puis IPs du FAI | On n’est pas encore chez OVH |
-| `213.186.x.x`, `37.59.x.x`, `91.121.x.x`, `57.130.x.x` | Plages typiques **OVH** |
-| Dernier saut `54.36.100.9` | Le VPS |
-| `* * *` | Routeur qui ne répond pas à traceroute ≠ lien cassé |
-| Ping ~ quelques ms depuis la France | Machine joignable en ICMP |
-
-Comparer deux postes (box différente, 4G) : chemins **différents**, même destination. Le navigateur, lui, n’affiche aucune de ces lignes.
+| Observation                                            | Lecture                                             |
+| ------------------------------------------------------ | --------------------------------------------------- |
+| Premier saut en `192.168.x.x`                          | Box / passerelle locale                             |
+| Puis IPs du FAI                                        | On n’est pas encore chez OVH                        |
+| `213.186.x.x`, `37.59.x.x`, `91.121.x.x`, `57.130.x.x` | Plages typiques **OVH**                             |
+| Dernier saut `54.36.100.9`                             | Le VPS                                              |
+| `* * *`                                                | Routeur qui ne répond pas à traceroute ≠ lien cassé |
+| Ping ~ quelques ms depuis la France                    | Machine joignable en ICMP                           |
