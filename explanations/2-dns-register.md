@@ -91,12 +91,10 @@ D’où : un changement DNS **n’est pas immédiat partout**. Ce n’est pas «
 ## Questions à garder en tête
 
 - [ ] Qu’est-ce que la propagation DNS ?
-- [ ] Pourquoi deux utilisateurs peuvent-ils obtenir des réponses différentes ?
-- [ ] En quoi le cache améliore-t-il les performances ?
 - [ ] Pourquoi un domaine a-t-il besoin d’enregistrements DNS ?
 - [ ] D’où vient l’adresse IP ? Pourquoi identifie-t-elle **ce** VPS ?
 - [ ] Plusieurs noms de domaine peuvent-ils pointer vers la même IP ?
 - [ ] Que se passe-t-il si l’IP du VPS change ?
-- [ ] Pourquoi une modification DNS n’est-elle pas visible tout de suite ?
+
 
 L’IP est connue **et** déclarée. Le navigateur peut l’utiliser pour **trouver le chemin** jusqu’à OVH — étape 3.
