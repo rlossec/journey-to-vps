@@ -14,11 +14,38 @@ Accédons à la page `https://mbr-raphael.readresolve.tech`
 
 Schémas avec responsabilités :
 
-Schéma Architecture, avec grands domaines /responsabilités :
+```mermaid
+flowchart TD
+  A["Navigateur / curl"] --> B["DNS Resolver"]
+  B --> C["Authoritative DNS"]
+  C --> D["Internet Routing"]
+  D --> E["HCAP anti-DDoS"]
+  E --> F["Backbone Router"]
+  F --> G["Edge Firewall"]
+  G --> H["Datacenter router"]
+  H --> I["VPS Firewall"]
+  I --> J["Reverse proxy"]
+  J --> K["Apache backend"]
 
-- Internet
-- OVH
-- Notre VPS (Chez OVH)
+  subgraph internet["Internet"]
+    B
+    C
+    D
+  end
+
+  subgraph ovh["OVH Infrastructure"]
+    E
+    F
+    G
+    H
+  end
+
+  subgraph nous["Our VPS configuration"]
+    I
+    J
+    K
+  end
+```
 
 On va découper ce voyage en 5 étapes :
 

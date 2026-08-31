@@ -8,8 +8,8 @@ Comme pour n’importe quel site, il va devoir transformer l'url en IP. Les outi
 
 Cette conversion, on l’appelle : Résoudre le nom de domaine.
 
-On imagine dans un premier temp qu'on vient d'emmenager, qu'on a acheté un nouvel ordinateur et qu'on consulte notre site que l'on vient de lancer à la seconde prêt.
-Un ensemble de coincidence tout a fait classique. (Humour)
+On imagine dans un premier temp qu'on vient d'emmenager, qu'on a acheté un nouvel ordinateur et qu'on consulte notre site personnel, que l'on vient finir de gérer l'hébergement.
+Un ensemble de coincidence tout a fait classique.
 
 Notre navigateur via notre box va faire intervenir un Résolveur DNS (de notre FAI) qui aura la tâche de trouver l'IP associée à l'url que l'on a donné.
 
@@ -51,18 +51,20 @@ Evidemment, pour chacun de ces 13 identités, ils existent des centaines d'insta
 
 Parmi ces 13 root server, le plus rapide répondera donc à la requête DNS par l'ip du serveur TLD, c'est à dire ici celui qui gère le `.tech`. Les serveurs root n'ont pas d'autre informations.
 
-A la fin de l'étape retour donc au Résolveur DNS de notre FAI mais avec l'information ou l'ip du TLD responsable des `.tech`.
+A la fin de l'étape, retour donc au Résolveur DNS de notre FAI mais avec l'information ou **l'ip du TLD responsable des `.tech`.**
 
 ### Etape 2 : TLD Server
 
 Evidemment maintenant qu'on a l'info du TLD Server, on va lui soumettre une requête, du type "Eh toi qui connait les .tech, tu saurais qui est responsable DNS de ce nom de domaine : `readresolve` ?
 Et il va nous répondre pas avec l'ip finale du VPS mais avec ce qu'on appelle le serveur autoritaire de notre nom de domaine. Comme notre VPS est à OVH, il s'agira d'un serveur DNS d'OVH.
 
-A la fin de l'étape retour donc au Résolveur DNS de notre FAI mais avec l'information ou l'ip du serveur autoritaire pour `readresolve.tech`.
+A la fin de l'étape retour donc au Résolveur DNS de notre FAI mais avec **l'ip du serveur autoritaire pour `readresolve.tech`**.
 
 ### Etape 3 : Serveur auritaire
 
-Et nous voilà à la dernière étape, on connait le serveur autoritaire qui lui a l'information de l'ip du VPS !
+Et nous voilà à la dernière étape, on connait le serveur autoritaire qui lui a l'information de l'ip du VPS ! On demande donc cet ip au serveur autoritaire.
+
+Et fin de la résolution !
 
 Si on revient à notre url, on a pas parlé du sous domaine. En effet, ce n'est pas la responsabilité du Resolver DNS, on en parlera plus tard.
 
@@ -89,7 +91,7 @@ On va se placer sur le serveur VPS.
 Une commande permet de suivre toutes les étapes de la résolution pour
 
 ```bash
-dig +trace readresolve.tech
+dig +trace mbr-me-readresolve.tech
 ```
 
 ```
@@ -141,8 +143,14 @@ Maintenant revenons un peu sur notre cas particulier : nouvel appartement, nouve
 
 En vrai, la résolution DNS prend des raccourci. Pour quasi chaque intervenant, navigateur, OS, resolveur, les serveurs DNS, ils ont un cache qui peut contenir l'information et permettre d'éviter des étapes.
 
-Le cache **accélère** (moins de allers-retours) et **soulage** la racine et les TLD. Contrepartie : une modification DNS n’est pas visible partout au même moment.
+Le cache **accélère** (moins de allers-retours) et **soulage** les serveurs root et les TLD. Contrepartie : une modification DNS n’est pas visible partout au même moment.
 
 ## Transition
 
 Mais comment lorsqu'on créé son serveur et son site, on va communiquer l'information à ces DNS ?
+
+## Questions à garder en tête
+
+- [x] Pourquoi deux utilisateurs peuvent-ils obtenir des réponses différentes ?
+- [x] En quoi le cache améliore-t-il les performances ?
+- [x] Pourquoi une modification DNS n’est-elle pas visible tout de suite ?
