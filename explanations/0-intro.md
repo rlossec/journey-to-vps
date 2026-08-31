@@ -2,57 +2,23 @@
 
 ## Evocation du cas d'étude
 
-Script :
+Avec Raphaël, Jonathan et Rayann on avait déjà parler du navigateur web et de son fonctionnement, cette fois on a essayer de vous montrer plus en détail comment à partir d’un simple url, on obtient un site web, on va essayer de vous faire comprendre les différents étapes et éléments qui interviennent à chaque fois qu'on consulte un site web.
 
-```
-Avec Dominga, Jonathan et Rayann on avait déjà parler du navigateur web et de son fonctionnement, cette fois on a essayer de vous montrer plus en détail comment à partir d’un simple url, on obtient un site web, on va essayer de vous faire comprendre les différents étapes et éléments qui interviennent à chaque fois qu'on consulte un site web.
-```
-
-```
 On va s'appuyer sur le VPS de la formation pour expérimenter au fur et à mesure. On essaiera d'aérer chaque partie un peu théorique par un peu de pratique.
 
 Première expérience de notre voyage :
 
-Accédons à la page `https://fr.wikipedia.org/wiki/Domain_Name_System`
-
-```
+Accédons à la page `https://mbr-raphael.readresolve.tech`
 
 ## Explications globales des étapes
 
 Schémas avec responsabilités :
 
-```mermaid
-flowchart TD
-  A["Navigateur / curl"] --> B["DNS Resolver"]
-  B --> C["Authoritative DNS"]
-  C --> D["Internet Routing"]
-  D --> E["HCAP anti-DDoS"]
-  E --> F["Backbone Router"]
-  F --> G["Edge Firewall"]
-  G --> H["Datacenter router"]
-  H --> I["VPS Firewall"]
-  I --> J["Reverse proxy"]
-  J --> K["Apache backend"]
+Schéma Architecture, avec grands domaines /responsabilités :
 
-  subgraph internet["Internet"]
-    B
-    C
-    D
-  end
-
-  subgraph ovh["OVH Infrastructure"]
-    E
-    F
-    G
-    H
-  end
-
-  subgraph nous["Our VPS configuration"]
-    I
-    J
-    K
-  end
-```
+- Internet
+- OVH
+- Notre VPS (Chez OVH)
 
 On va découper ce voyage en 5 étapes :
 

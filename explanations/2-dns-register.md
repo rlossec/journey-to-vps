@@ -1,12 +1,15 @@
 # 2. Enregistrement DNS
 
-À l’étape 1, un serveur autoritaire (`dns13.ovh.net`) a répondu :
+> **Rappel :**
+> À l’étape 1, un serveur autoritaire (`dns13.ovh.net`) a répondu : `readresolve.tech` → `54.36.100.9`
+>
+> Cette réponse n’est pas calculée au moment de la requête. Quelqu’un l’a **écrite** avant.
 
-`readresolve.tech` → `54.36.100.9`
+Ici on passe du côté **administrateur** : comment on déclare le lien entre le nom et le VPS.
 
-Cette réponse n’est pas calculée au moment de la requête. Quelqu’un l’a **écrite** avant. Ici on passe du côté **administrateur** : comment on déclare le lien entre le nom et le VPS.
+Réserver le nom `readresolve.tech` ne suffit pas.
 
-Réserver le nom `readresolve.tech` ne suffit pas. Sans enregistrements, la chaîne de résolution aboutit à un serveur de noms qui n’a **rien** à renvoyer — ou une réponse qui ne pointe pas vers notre machine.
+Sans enregistrements, la chaîne de résolution aboutit à un serveur de noms qui n’a **rien** à renvoyer — ou une réponse qui ne pointe pas vers notre machine.
 
 ## De la réservation à la zone
 
@@ -90,13 +93,13 @@ D’où : un changement DNS **n’est pas immédiat partout**. Ce n’est pas «
 
 ## Questions à garder en tête
 
-- [ ] Qu’est-ce que la propagation DNS ?
-- [ ] Pourquoi deux utilisateurs peuvent-ils obtenir des réponses différentes ?
-- [ ] En quoi le cache améliore-t-il les performances ?
-- [ ] Pourquoi un domaine a-t-il besoin d’enregistrements DNS ?
-- [ ] D’où vient l’adresse IP ? Pourquoi identifie-t-elle **ce** VPS ?
-- [ ] Plusieurs noms de domaine peuvent-ils pointer vers la même IP ?
-- [ ] Que se passe-t-il si l’IP du VPS change ?
-- [ ] Pourquoi une modification DNS n’est-elle pas visible tout de suite ?
+- [x] Qu’est-ce que la propagation DNS ?
+- [x] Pourquoi deux utilisateurs peuvent-ils obtenir des réponses différentes ?
+- [x] En quoi le cache améliore-t-il les performances ?
+- [x] Pourquoi un domaine a-t-il besoin d’enregistrements DNS ?
+- [x] D’où vient l’adresse IP ? Pourquoi identifie-t-elle **ce** VPS ?
+- [x] Plusieurs noms de domaine peuvent-ils pointer vers la même IP ?
+- [x] Que se passe-t-il si l’IP du VPS change ?
+- [x] Pourquoi une modification DNS n’est-elle pas visible tout de suite ?
 
 L’IP est connue **et** déclarée. Le navigateur peut l’utiliser pour **trouver le chemin** jusqu’à OVH — étape 3.

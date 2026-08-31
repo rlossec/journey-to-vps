@@ -2,7 +2,11 @@
 
 ## Théorie
 
-A l'étape précédente, on a accédé à `https://fr.wikipedia.org/wiki/Domain_Name_System`, on aurait tout aussi bien pu choisir `https://mbr-me.readresolve.tech`.Pour tout site, il va devoir transformer l'url en IP : Résoudre le nom de domaine.
+A l'étape précédente, on a accédé à `https://mbr-raphael.readresolve.tech`.
+
+Comme pour n’importe quel site, il va devoir transformer l'url en IP. Les outils informatiques fonctionnent avec des nombres et pour le Protocol Internet, c’est l’IP qui fait foi.
+
+Cette conversion, on l’appelle : Résoudre le nom de domaine.
 
 On imagine dans un premier temp qu'on vient d'emmenager, qu'on a acheté un nouvel ordinateur et qu'on consulte notre site que l'on vient de lancer à la seconde prêt.
 Un ensemble de coincidence tout a fait classique. (Humour)
@@ -17,12 +21,11 @@ Pour bien comprendre la suite des étapes il faut bien analyser l'url et son dé
 
 [Schema Découpage Url](../excalidraw/1-dns-lookup/1-1-url-explanations.excalidraw)
 
-```text
 On a plusieurs parties,
+
 - `.tech` correspond au **Top Level Domain** : TLD
 - `readresolve` correspond **au nom de domaine**
 - `mbr-me` enfin correspond à un sous domaine
-```
 
 [Schema Arbre Url](../excalidraw/1-dns-lookup/1-2-url-tree.excalidraw)
 
@@ -63,27 +66,7 @@ Et nous voilà à la dernière étape, on connait le serveur autoritaire qui lui
 
 Si on revient à notre url, on a pas parlé du sous domaine. En effet, ce n'est pas la responsabilité du Resolver DNS, on en parlera plus tard.
 
-### Brouillons
-
-#### 1. Diagramme de flux :
-
-```mermaid
-sequenceDiagram
-  participant Nav as Navigateur / OS
-  participant R as Résolveur récursif
-  participant Root as Serveur racine
-  participant TLD as TLD .tech
-  participant Auth as DNS autoritaire
-
-  Nav->>R: readresolve.tech → quelle IP ?
-  R->>Root: qui gère .tech ?
-  Root-->>R: ns01.trs-dns.com (parmi d’autres)
-  R->>TLD: qui gère readresolve.tech ?
-  TLD-->>R: dns13.ovh.net / ns13.ovh.net
-  R->>Auth: A de readresolve.tech ?
-  Auth-->>R: 54.36.100.9
-  R-->>Nav: 54.36.100.9
-```
+### Récap
 
 Quatre rôles à distinguer :
 
@@ -98,8 +81,11 @@ La racine **ne connaît pas** l’IP de `readresolve.tech`. Elle sait seulement 
 
 ## Pratique
 
-Allons un peu regarder via des commandes si on peut remplir notre schéma avec les données
+Voilà pour la théorie.
 
+Allons expérimenter via des commandes si on peut suivre cette résolution DNS.
+
+On va se placer sur le serveur VPS.
 Une commande permet de suivre toutes les étapes de la résolution pour
 
 ```bash
