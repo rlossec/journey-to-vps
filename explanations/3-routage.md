@@ -6,11 +6,9 @@ L’étape 1 a donné une IP. L’étape 2 a expliqué comment elle a été **d�
 
 Internet n’est pas un câble unique vers OVH. C’est un assemblage de **réseaux d’opérateurs** (FAI, OVH, transitaires…). Chaque réseau est un **système autonome** (AS) : il gère ses propres routeurs et ses propres adresses.
 
-**BGP** (Border Gateway Protocol), en une phrase : les opérateurs s’annoncent _« je sais joindre tel bloc d’IP »_. OVH annonce, entre autres, le préfixe qui contient `54.36.100.9`. Les FAI apprennent un chemin vers ce préfixe. On n’entre pas dans les messages BGP ni dans les tables.
+**BGP** (Border Gateway Protocol), en une phrase : les opérateurs s’annoncent _« je sais joindre tel bloc d’IP »_. OVH annonce, entre autres, le préfixe qui contient `54.36.100.9`. Les FAI apprennent un chemin vers ce préfixe.
 
-Conséquence pédagogique : le navigateur ne calcule pas la route. Il envoie vers l’IP ; **les routeurs** choisissent le prochain saut d’après ce qu’ils ont appris (dont BGP). Deux clients (Free, Orange, 4G) peuvent emprunter des chemins **différents** pour la même IP.
-
-`ping` répond à une autre question : « la machine répond-elle, et en combien de temps ? » Ici, depuis un poste en France : ~9 ms, 0 % de perte. Ça dit que l’IP est **joignable** (ICMP). Ça ne dit pas que le site web marche (ports, firewall, Apache : étapes 4 et 5).
+Le navigateur ne calcule pas la route. Il envoie vers l’IP ; **les routeurs** choisissent le prochain saut d’après ce qu’ils ont appris. Deux clients (Free, Orange, 4G) peuvent emprunter des chemins **différents** pour la même IP.
 
 ## Pratique
 
@@ -32,8 +30,6 @@ Exemple réel (poste derrière une box, FAI Free, vers `54.36.100.9`) :
 ```
 
 Les `* * *` ne veulent pas dire que le paquet est mort : beaucoup de routeurs **ignorent ICMP** (politique, charge, matériel). Le trafic utile (HTTPS) passe souvent alors que traceroute reste muet. Inversement, un ping OK ne garantit pas HTTPS.
-
-On **n’identifie pas** sur cette liste « ceci est le HCAP » ou « ceci est le pare-feu de bordure ». Traceroute montre des **IP de routeurs**, pas les noms des briques commerciales OVH. Ces briques, on les pose par le **modèle** ci-dessous.
 
 ## Dans OVH : le paquet n’arrive pas « sur le VPS »
 

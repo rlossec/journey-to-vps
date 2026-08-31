@@ -13,7 +13,7 @@ On va s'appuyer sur le VPS de la formation pour expérimenter au fur et à mesur
 
 Première expérience de notre voyage :
 
-Accédons à la page `https://fr.wikipedia.org/wiki/Domain_Name_System`
+Accédons à la page `https://mbr-raphael.readresolve.tech`
 
 ```
 
