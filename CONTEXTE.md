@@ -29,10 +29,10 @@ Avant les 5 étapes : une **intro courte** en deux temps — (1) les **acteurs**
 | 2. Noms de domaine et DNS | 2. Enregistrement DNS |
 | 3. Propagation et résolution DNS | 1. Résolution DNS |
 | 4. Du DNS au réseau OVH | 3. Routage Internet |
-| 5. Intérieur de l’infra OVH | 4. Infrastructure OVH |
-| 6. Firewall du VPS | 5. Notre configuration — firewall VPS |
-| 7. Services à l’écoute et ports | 5. Notre configuration — ports |
-| 8. Reverse proxy | 5. Notre configuration — reverse proxy |
+| 5. Intérieur de l’infra OVH | 4. Infrastructure de l’hébergeur (OVH) |
+| 6. Firewall du VPS | 5. Configuration du VPS — firewall (`iptables`) |
+| 7. Services à l’écoute et ports | 5. Configuration du VPS — ports et sockets |
+| 8. Reverse proxy | 5. Configuration du VPS — reverse proxy |
 
 ## Périmètre de cette présentation
 
@@ -41,8 +41,8 @@ Cinq grandes étapes, dans cet ordre (fil client : on tape l’URL, puis on expl
 1. **Résolution DNS** — on soumet un nom dans le navigateur : comment trouve-t-on l’IP ? (résolveur récursif, autoritaires, cache, **propagation**).
 2. **Enregistrement DNS** — d’où vient le nom : réservation, sous-domaines, zone DNS, IP publique du VPS, enregistrements (`A`, `AAAA`, `CNAME`, `MX` et `TXT` brièvement), TTL.
 3. **Routage Internet** — une fois l’IP connue, comment les paquets trouvent le chemin jusqu’à OVH (**BGP** en concept seulement).
-4. **Infrastructure OVH** — chemin **dans** OVH avant notre machine : HCAP / anti-DDoS, backbone, pare-feu de bordure, routeur de datacenter (le trafic n’arrive pas « directement » sur le VPS).
-5. **Notre configuration** — firewall du VPS (`iptables` : filtrage, entrant/sortant, politique par défaut, ordre des règles), ports et services en écoute, **reverse proxy** Apache (frontend → backend). Comparaison brève proxy forward vs reverse.
+4. **Infrastructure de l’hébergeur (OVH)** — chemin **dans** OVH avant notre machine : HCAP / anti-DDoS, backbone, pare-feu de bordure, routeur de datacenter (le trafic n’arrive pas « directement » sur le VPS). On n’a pas la main dessus.
+5. **Configuration du VPS** — firewall du VPS (`iptables` : filtrage, entrant/sortant, politique par défaut, ordre des règles), vocabulaire (ports, sockets), services en écoute, **reverse proxy** Apache (frontend → backend). Comparaison proxy forward vs reverse.
 
 Points du formateur à ne pas oublier **dans** ces étapes :
 
@@ -93,8 +93,8 @@ Les étapes sont numérotées de `1` à `5` de la même façon partout :
 1. `dns-lookup` — résolution DNS  
 2. `dns-register` — enregistrement DNS  
 3. `routage` — routage Internet  
-4. `firewall` — firewall OVH + firewall VPS  
-5. `apache-server` — Apache (ports + reverse proxy)
+4. `host-infra` — infrastructure de l'hébergeur (OVH)  
+5. `vps-configuration` — Configuration du VPS (ports, sockets, reverse proxy)
 
 ## Principes de rédaction
 

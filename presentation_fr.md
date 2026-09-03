@@ -31,8 +31,8 @@ Puis les 5 étapes. Premier zoom : **sans cache**, ordinateur tout neuf.
 1. Résolution DNS
 2. Enregistrement DNS
 3. Routage Internet (jusqu’à OVH, puis *dans* OVH)
-4. Firewall OVH, puis firewall VPS
-5. Ports, Apache, reverse proxy
+4. Infrastructure de l’hébergeur (OVH)
+5. Configuration du VPS (firewall, ports, reverse proxy)
 
 ## 1. Résolution DNS
 
@@ -84,21 +84,21 @@ Pratique : `ping` (joignable ?) · `traceroute` / `tracert` (sauts). `* * *` ≠
 
 DevTools Réseau : une latence, zéro saut.
 
-## 4. Firewall
+## 4. Infrastructure de l’hébergeur (OVH)
 
-Théorie : `explanations/4-firewall.md` · Commandes : `commands/4-firewall.md`
+Théorie : `explanations/4-host-infra.md` · Commandes : `commands/4-firewall.md`
 
 Deux douanes. Apache n’a encore rien.
 
 **OVH** — DoS vs DDoS (une source / des milliers). Volumétrique, surcharge, exploit (une phrase chacun). Attaque dès la mise en service du VPS, `iptables` pas prêt. **HCAP** (policer en bordure, avant le DC) · **VAC** (lavage) · **pare-feu de bordure** (ACL, console). Pas le cas « serveur de jeux ».
 
-**VPS** — `iptables` : entrant / sortant, politique par défaut, **ordre**. TP : `DROP`/`REJECT` **443**, pas le 22. `curl` + DevTools. `ping` peut rester vert.
+Captures console OVH : formateur.
 
-Captures console OVH + `iptables -L` : formateur / root.
+## 5. Configuration du VPS
 
-## 5. Ports, Apache, reverse proxy
+Théorie : `explanations/5-vps-configuration.md` · Commandes : `commands/5-apache-server.md`
 
-Théorie : `explanations/5-apache-server.md` · Commandes : `commands/5-apache-server.md`
+**Firewall VPS** — `iptables` : entrant / sortant, politique par défaut, **ordre**. TP : `DROP`/`REJECT` **443**, pas le 22. `curl` + DevTools. `ping` peut rester vert. Captures `iptables -L` : formateur / root.
 
 Le paquet est sur le VPS. **Qui écoute ?** Port + interface : `0.0.0.0` = public (si firewall OK) · `127.0.0.1` = machine seule.
 
