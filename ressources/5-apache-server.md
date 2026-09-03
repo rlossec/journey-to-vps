@@ -5,3 +5,5 @@
 
 Très bonne ressources :
 Proxy et Reverse Proxy : https://www.youtube.com/watch?v=h4z6ly0Kd7s
+
+- Proxy et Reverse proxy EN : https://www.youtube.com/watch?v=4NB0NDtOwIQ
