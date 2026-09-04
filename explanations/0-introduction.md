@@ -12,45 +12,16 @@ Accédons à la page `https://mbr-raphael.readresolve.tech`
 
 ## Explications globales des étapes
 
-Schémas avec responsabilités :
+Schéma Architecture, avec grands domaines /responsabilités : : [0-introduction](../excalidraw/0-introduction.excalidraw)
 
-```mermaid
-flowchart TD
-  A["Navigateur / curl"] --> B["DNS Resolver"]
-  B --> C["Authoritative DNS"]
-  C --> D["Internet Routing"]
-  D --> E["HCAP anti-DDoS"]
-  E --> F["Backbone Router"]
-  F --> G["Edge Firewall"]
-  G --> H["Datacenter router"]
-  H --> I["VPS Firewall"]
-  I --> J["Reverse proxy"]
-  J --> K["Apache backend"]
-
-  subgraph internet["Internet"]
-    B
-    C
-    D
-  end
-
-  subgraph ovh["OVH Infrastructure"]
-    E
-    F
-    G
-    H
-  end
-
-  subgraph nous["Our VPS configuration"]
-    I
-    J
-    K
-  end
-```
+- Internet
+- OVH
+- Notre VPS (Chez OVH)
 
 On va découper ce voyage en 5 étapes :
 
-1. **Résolution DNS** — comment le nom devient `54.36.100.9`.
-2. **Enregistrement DNS** — comment on a déclaré ce lien (zone, records, TTL).
+1. **Résolution DNS** — Comment l’url `readresolve.tech` devient une IP.
+2. **Enregistrement DNS** — comment on a déclaré ce lien entre `readresolve.tech` et l’ip
 3. **Routage** — comment les données trouvent le chemin jusqu'au VPS
 4. **Infrastructure OVH** - de même le chemin mais aussi les sécurités dans OVH
 5. **Configuration du VPS : Ports et Apache** : enfin l'arrivée dans le VPS et la configuration que l'on gère
