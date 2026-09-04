@@ -13,7 +13,7 @@ Un ensemble de coincidence tout a fait classique.
 
 Notre navigateur via notre box va faire intervenir un Résolveur DNS (de notre FAI) qui aura la tâche de trouver l'IP associée à l'url que l'on a donné.
 
-Pour cela il va déjà analysé notre url et faire une requete DNS.
+Pour cela il va déjà analysé notre url et faire une requête DNS.
 
 ### 0 - Compréhension d'url
 
@@ -27,16 +27,22 @@ On a plusieurs parties,
 - `readresolve` correspond **au nom de domaine**
 - `mbr-me` enfin correspond à un sous domaine
 
+Illustrons cela avec Google et ses services.
+
 [Schema Arbre Url](../excalidraw/1-dns-lookup/1-2-url-tree.excalidraw)
 
-Si on prend l'exemple connu de google, on a cet arbre avec
+On a cet arbre avec
 
 - en haut le root,
 - puis `.com` qui est l'extension la plus utilisé et donc le TLD ici.
 - puis le nom de domaine : `google`
 - et de multiples sous-domaines, qui représente les différences services google.
 
-Schema pour les 3 étapes à suivre :
+### Intro resolver
+
+Avec cela en tête passons au fonctionnement du Resolver DNS.
+Comme je l'avais indiqué, c'est propre à notre FAI, même si des alternatives existent.
+
 [Schema Resolution DNS](../excalidraw/1-dns-lookup/1-5-dns-lookup.excalidraw)
 
 ### Etape 1 : Root Server
