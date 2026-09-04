@@ -6,10 +6,10 @@ A l'étape précédente, on a accédé à `https://mbr-raphael.readresolve.tech`
 
 Comme pour n’importe quel site, il va devoir transformer l'url en IP. Les outils informatiques fonctionnent avec des nombres et pour le Protocol Internet, c’est l’IP qui fait foi.
 
-Cette conversion, on l’appelle : Résoudre le nom de domaine.
+Quand on fait cette conversion, on dit que l’on résout le nom de domaine.
 
-On imagine dans un premier temp qu'on vient d'emmenager, qu'on a acheté un nouvel ordinateur et qu'on consulte notre site personnel, que l'on vient finir de gérer l'hébergement.
-Un ensemble de coincidence tout a fait classique.
+On imagine dans un premier temps qu'on vient d'emménager, qu'on a acheté un nouvel ordinateur et qu'on consulte notre site que l'on vient de lancer à la seconde prêt.
+Un ensemble de coïncidence tout a fait classique.
 
 Notre navigateur via notre box va faire intervenir un Résolveur DNS (de notre FAI) qui aura la tâche de trouver l'IP associée à l'url que l'on a donné.
 
@@ -66,7 +66,7 @@ Et il va nous répondre pas avec l'ip finale du VPS mais avec ce qu'on appelle l
 
 A la fin de l'étape retour donc au Résolveur DNS de notre FAI mais avec **l'ip du serveur autoritaire pour `readresolve.tech`**.
 
-### Etape 3 : Serveur auritaire
+### Etape 3 : Serveur autoritaire
 
 Et nous voilà à la dernière étape, on connait le serveur autoritaire qui lui a l'information de l'ip du VPS ! On demande donc cet ip au serveur autoritaire.
 
