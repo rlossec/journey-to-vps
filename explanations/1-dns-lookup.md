@@ -1,6 +1,6 @@
 # 1. Résolution DNS
 
-## Théorie
+## 1.1. Théorie
 
 A l'étape précédente, on a accédé à `https://mbr-raphael.readresolve.tech`.
 
@@ -87,7 +87,7 @@ Quatre rôles à distinguer :
 
 La racine **ne connaît pas** l’IP de `readresolve.tech`. Elle sait seulement où sont les serveurs `.tech`. Le TLD **ne connaît pas** forcément l’IP non plus : il pointe vers les serveurs de noms du domaine.
 
-## Pratique
+## 1.2. Pratique
 
 Voilà pour la théorie.
 
@@ -143,7 +143,7 @@ readresolve.tech.       3600    IN      RRSIG   A 8 2 3600 20260911054305 202608
 ;; Received 265 bytes from 5.39.112.241#53(ns13.ovh.net) in 2 ms
 ```
 
-## Cache
+## 1.3. Cache
 
 Maintenant revenons un peu sur notre cas particulier : nouvel appartement, nouvel ordinateur, nouveau site.
 

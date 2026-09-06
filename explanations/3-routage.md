@@ -1,63 +1,138 @@
-# 3. Routage Internet
+# 3. Routage internet
 
-L’étape 1 a donné une IP. L’étape 2 a expliqué comment elle a été **déclarée**. Le navigateur connaît maintenant `54.36.100.9`. Il n’a **pas** le plan du trajet : il envoie un paquet vers cette adresse, et le réseau se débrouille.
+À l'étape précédente, notre navigateur a réussi à obtenir une information essentielle :
 
-## Sur Internet : des réseaux qui se passent le paquet
+> `readresolve.tech` → `54.36.100.9`
 
-Internet n’est pas un câble unique vers OVH. C’est un assemblage de **réseaux d’opérateurs** (FAI, OVH, transitaires…). Chaque réseau est un **système autonome** (AS) : il gère ses propres routeurs et ses propres adresses.
+On connaît donc maintenant **la destination**. Mais il nous manque encore une information importante :
 
-**BGP** (Border Gateway Protocol), en une phrase : les opérateurs s’annoncent _« je sais joindre tel bloc d’IP »_. OVH annonce, entre autres, le préfixe qui contient `54.36.100.9`. Les FAI apprennent un chemin vers ce préfixe. On n’entre pas dans les messages BGP ni dans les tables.
+> **Comment est-ce que notre ordinateur va rejoindre cette adresse IP ?**
 
-Le navigateur ne calcule pas la route. Il envoie vers l’IP ; **les routeurs** choisissent le prochain saut d’après ce qu’ils ont appris. Deux clients (Free, Orange, 4G) peuvent emprunter des chemins **différents** pour la même IP.
+Parce que connaître l'adresse d'une maison ne suffit pas pour y arriver. Il faut encore savoir **par quelles routes passer**. C'est justement le rôle du routage.
 
-## Pratique
+## 3.1. Théorie — Routage
 
-`traceroute` / `tracert` envoie des sondes avec un **TTL IP** qui augmente. Chaque routeur qui expire le TTL signale « je suis là ». On obtient une **liste de sauts**, pas une carte officielle OVH.
+Le routage, c'est le mécanisme qui permet aux données de déterminer **vers quel prochain équipement ils doivent être envoyés** pour se rapprocher de leur destination.
 
-Exemple réel (poste derrière une box, FAI Free, vers `54.36.100.9`) :
+Notre ordinateur ne connaît évidemment pas Internet dans son ensemble. Il ne possède pas une carte complète du chemin.
+
+À la place, chaque équipement réseau possède une **table de routage**.
+Cette table lui permet de répondre à une question beaucoup plus simple :
+
+> **« Pour cette adresse IP de destination, par où est-ce que j'envoie le paquet ? »**
+
+Et ce fonctionnement se répète de routeur en routeur.
+
+## 3.2. Pratique : ip route
+
+Revenons à notre ordinateur. Il veut envoyer des données à : `54.36.100.9`
+
+Mais cette adresse n'est évidemment pas dans notre réseau local. Notre ordinateur va donc l'envoyer à ce qu'on appelle sa **passerelle par défaut**. Dans une installation classique, cette passerelle est notre box ou notre routeur.
+
+Il possède donc une table de routage. On peut la consulter.
+
+### Commandes
 
 ```
- 1  192.168.1.254      box (réseau local)
- 2  194.149.174.96     premier saut opérateur
- 3  212.27.35.6        réseau Free
- 4  * * *              pas de réponse ICMP
- 5  213.186.32.181     entrée visible du réseau OVH
- 6–7  * * *
- 8  57.130.3.80        encore OVH
- 9  37.59.16.2
- …  d’autres sauts OVH, plusieurs * * *
-19  54.36.100.9        le VPS
+ip route
 ```
 
-Les `* * *` ne veulent pas dire que le paquet est mort : beaucoup de routeurs **ignorent ICMP** (politique, charge, matériel). Le trafic utile (HTTPS) passe souvent alors que traceroute reste muet. Inversement, un ping OK ne garantit pas HTTPS.
+Le mot important ici est :
 
-On **n’identifie pas** sur cette liste « ceci est le HCAP » ou « ceci est le pare-feu de bordure ». Traceroute montre des **IP de routeurs**, pas les noms des briques commerciales OVH. Ces briques, on les pose par le **modèle** ci-dessous.
+**`default`**
 
-## Dans OVH : le paquet n’arrive pas « sur le VPS »
+Cela signifie en quelque sorte :
 
-Une fois le trafic dans le réseau OVH, il ne saute pas du premier routeur OVH à `54.36.100.9`. Plusieurs étages, **tous côté OVH** :
+> « Pour toutes les destinations pour lesquelles je n'ai pas de route plus précise, utilise cette passerelle. »
 
-1. **HCAP** (anti-DDoS) — premier filtre, parfois **avant** le cœur du datacenter. Détail des attaques et de la mitigation : **étape 4**.
-2. **Backbone** — gros routeurs qui relient les points de présence et les DC.
-3. **Pare-feu de bordure** — filtrage d’entrée du réseau / du site.
-4. **Routeur de datacenter** — dernier aiguillage vers l’hôte qui porte le VPS.
-5. **VPS** — enfin la machine. Encore un firewall **à nous** (`iptables`) avant Apache.
+On peut donc avoir plusieurs routes :
 
-Pourquoi plusieurs couches : isoler les clients, absorber un flood **avant** qu’il n’atteigne une petite VM, ne pas exposer l’hyperviseur comme s’il était sur Internet nu. Rien de tout ça n’est configurable dans notre zone DNS ni dans Apache.
+```
+192.168.1.0/24     → réseau local
+default            → 192.168.1.1
+```
 
-| Côté Internet / OVH                        | Côté formation                              |
-| ------------------------------------------ | ------------------------------------------- |
-| Tables de routage, BGP, chemin jusqu’à OVH | —                                           |
-| HCAP, backbone, bordure, routeur DC        | Firewall du VPS (étape 4), Apache (étape 5) |
+Si je veux joindre une machine de mon réseau local, je peux lui parler directement.
 
-DevTools → Réseau : on voit une requête vers `readresolve.tech`, une latence totale. On ne voit **aucun** saut. Même information que le navigateur : nom, puis IP, puis « ça a répondu » ou non.
+Si je veux joindre `54.36.100.9`, ce n'est pas mon réseau → je passe par la route par défaut.
+
+---
+
+## 3.3. Choix
+
+Évidemment, un routeur peut avoir énormément de routes. Il faut donc une règle pour déterminer laquelle utiliser. Une notion importante est celle du **préfixe réseau**.
+
+Par exemple :
+
+```
+54.36.0.0/16
+54.36.100.0/24
+```
+
+La deuxième route est plus précise que la première.
+
+Si on cherche :
+
+```
+54.36.100.9
+```
+
+elle correspond aux deux.
+
+Mais le routeur choisira la route la plus précise :
+
+```
+54.36.100.0/24
+```
+
+C'est ce qu'on appelle le principe du **longest prefix match**.
+
+On ne va pas rentrer beaucoup plus loin dans les détails pour l'instant.
+
+L'idée à retenir est simplement :
+
+> **Un routeur regarde l'adresse de destination et cherche la route la plus précise qu'il possède.**
+
+## 3.4. Pratique — Traceroute
+
+Linux
+
+```
+traceroute 54.36.100.9
+```
+
+Sous Windows :
+
+```
+tracert 54.36.100.9
+```
+
+La commande va afficher une succession de **sauts**.
+
+---
+
+## Transition
+
+Notre paquet a maintenant trouvé son chemin jusqu'au réseau qui héberge notre VPS.
+
+Mais on vient de dire quelque chose d'important :
+
+> **« réseau OVH »**
+
+Et notre histoire ne s'arrête pas là.
+
+Notre VPS est hébergé dans une infrastructure OVH, avec ses propres équipements réseau et ses propres mécanismes de sécurité.
+
+Alors une nouvelle question apparaît :
+
+> **Une fois arrivé chez OVH, qu'est-ce qui se passe exactement avant que le paquet atteigne notre VPS ?**
+
+C'est ce que nous allons regarder maintenant.
 
 ## Questions à garder en tête
 
-- Une fois l’IP connue, comment le serveur est-il atteint ?
-- Le navigateur connaît-il la route complète ?
-- Pourquoi le trafic ne va-t-il pas **directement** sur le VPS ?
-- Pourquoi plusieurs couches de protection / d’aiguillage ?
-- Lesquelles sont gérées par **OVH** ?
-
-Le paquet est (presque) arrivé. Il reste les **douanes** : d’abord OVH, puis les règles qu’on met sur le VPS — étape 4.
+- [x] Une fois l’IP connue, comment le serveur est-il atteint ?
+- [x] Le navigateur connaît-il la route complète ?
+- [x] Pourquoi le trafic ne va-t-il pas **directement** sur le VPS ?
+- [x] Pourquoi plusieurs couches de protection / d’aiguillage ?
+- [x] Lesquelles sont gérées par **OVH** ?

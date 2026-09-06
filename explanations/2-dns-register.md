@@ -109,7 +109,7 @@ On y retrouve notamment :
 
 Le wildcard `*` fait que tout sous-domaine non listé ailleurs (dont `www`) résout aussi vers `54.36.100.9`. Les records **NS**, **MX**, **TXT** (SPF…), eux, se consultent plutôt dans l’onglet zone DNS — ou directement depuis le terminal.
 
-### En ligne de commane
+### En ligne de commande
 
 On lit ce qu’on (ou OVH) a écrit, type par type.
 
@@ -136,17 +136,6 @@ dig TXT readresolve.tech
 dig A www.readresolve.tech
 dig CNAME www.readresolve.tech
 ```
-
-À reconnaître au minimum :
-
-| Type  | Attendu ici                                                                  |
-| ----- | ---------------------------------------------------------------------------- |
-| A     | `54.36.100.9` (TTL souvent 3600)                                             |
-| AAAA  | pas d’enregistrement                                                         |
-| NS    | `dns13.ovh.net`, `ns13.ovh.net`                                              |
-| MX    | serveurs mail OVH (avec une priorité)                                        |
-| TXT   | souvent un SPF (`v=spf1 …`)                                                  |
-| `www` | **A** vers la même IP — pas un CNAME (couvert par le wildcard ou un A dédié) |
 
 Détail des commandes : [`commands/2-dns-register.md`](../commands/2-dns-register.md).
 
