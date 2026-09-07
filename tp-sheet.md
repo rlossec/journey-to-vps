@@ -1,42 +1,44 @@
 # Feuille TP — commandes
 
-Connectez vous au VPS :
+On va avoir besoin de 2 terminaux :
+- un `bash` sur le VPS
+- un `PowerShell` sur Windows (déso Hélène et Amine :broken_heart: ) 
+
+Donc connectez vous au VPS :
 
 ```bash
 ssh mbr-********@54.36.100.9 -p 64483
 ```
 
-Sur chaque partie : taper la commande, observer la sortie.
-Selon les commandes, on sera soit sur le VPS soit en local sur votre machine.
-En local prenez la commande qui correspond à votre OS.
+Il y a qq fois équivalence mais souvent les commandes différent entre le os.
+Il y a du bon à prendre dans les deux.
 
-Après chaque commande : lien **Sortie + analyse** — exemple attendu et lecture courte des lignes utiles.
+Après chaque commande : **deux liens** (Linux / macOS et Windows) — chacun ouvre l’analyse de **son** OS.
+S’il n’y a pas d’équivalent, c’est indiqué, sans fiche.
+
+Chaque fiche rappelle la commande, montre une sortie attendue, commente les lignes utiles, et ramène ici.
 
 ---
 
 ## Introduction
 
--
+Pas de commandes
 
 ---
 
 ## 1. Résolution DNS
 
-**Objectif** : comprendre les étapes de la résolution
-
-**Où** : Sur le **VPS**
-
-### Chemin entier
+### Résolution en 1 commande
 
 <a id="cmd-1-trace"></a>
 
-**Linux**
+**Linux / macOS**
 
 ```bash
 dig +trace readresolve.tech
 ```
 
-[Sortie + analyse](tp-analyses/1-dig-trace.md)
+[Sortie + analyse](tp-analyses/linux-macos/1-dig-trace.md)
 
 **Windows** : pas d’équivalent.
 
@@ -48,13 +50,7 @@ Le résultat est abrupt mais tout est là !
 
 <a id="cmd-1-root"></a>
 
-**Linux**
-
-```bash
-dig NS tech. @a.root-servers.net
-```
-
-[Sortie + analyse](tp-analyses/1-root-ns-tech.md)
+**Linux / macOS** : pas d’équivalent.
 
 **Windows**
 
@@ -62,19 +58,13 @@ dig NS tech. @a.root-servers.net
 nslookup -type=NS tech. a.root-servers.net
 ```
 
-[Sortie + analyse](tp-analyses/1-root-ns-tech.md)
+[Sortie + analyse](tp-analyses/windows/1-root-ns-tech.md)
 
 #### 2. Demander à un TLD server : "Quel est le serveur autoritaire ?"
 
 <a id="cmd-1-tld"></a>
 
-**Linux**
-
-```bash
-dig NS readresolve.tech @ns01.trs-dns.com
-```
-
-[Sortie + analyse](tp-analyses/1-tld-ns.md)
+**Linux / macOS** : pas d’équivalent.
 
 **Windows**
 
@@ -82,19 +72,13 @@ dig NS readresolve.tech @ns01.trs-dns.com
 nslookup -type=NS readresolve.tech ns01.trs-dns.com
 ```
 
-[Sortie + analyse](tp-analyses/1-tld-ns.md)
+[Sortie + analyse](tp-analyses/windows/1-tld-ns.md)
 
 #### 3. Demander à un serveur autoritaire : "Quelle est l'IP du serveur final ?"
 
 <a id="cmd-1-auth"></a>
 
-**Linux**
-
-```bash
-dig A readresolve.tech @dns13.ovh.net
-```
-
-[Sortie + analyse](tp-analyses/1-auth-a.md)
+**Linux / macOS** : pas d’équivalent.
 
 **Windows**
 
@@ -102,7 +86,7 @@ dig A readresolve.tech @dns13.ovh.net
 nslookup -type=A readresolve.tech dns13.ovh.net
 ```
 
-[Sortie + analyse](tp-analyses/1-auth-a.md)
+[Sortie + analyse](tp-analyses/windows/1-auth-a.md)
 
 ---
 
@@ -114,13 +98,13 @@ Objectif : Découvrir les enregistrements sur le VPS
 
 <a id="cmd-2-a"></a>
 
-**Linux**
+**Linux / macOS**
 
 ```bash
 dig A readresolve.tech
 ```
 
-[Sortie + analyse](tp-analyses/2-a.md)
+[Sortie + analyse](tp-analyses/linux-macos/2-a.md)
 
 **Windows**
 
@@ -128,19 +112,19 @@ dig A readresolve.tech
 Resolve-DnsName -Name "readresolve.tech" -Type A
 ```
 
-[Sortie + analyse](tp-analyses/2-a.md)
+[Sortie + analyse](tp-analyses/windows/2-a.md)
 
 ### Record AAAA
 
 <a id="cmd-2-aaaa"></a>
 
-**Linux**
+**Linux / macOS**
 
 ```bash
 dig AAAA readresolve.tech
 ```
 
-[Sortie + analyse](tp-analyses/2-aaaa.md)
+[Sortie + analyse](tp-analyses/linux-macos/2-aaaa.md)
 
 **Windows**
 
@@ -148,19 +132,19 @@ dig AAAA readresolve.tech
 Resolve-DnsName -Name "readresolve.tech" -Type AAAA
 ```
 
-[Sortie + analyse](tp-analyses/2-aaaa.md)
+[Sortie + analyse](tp-analyses/windows/2-aaaa.md)
 
 ### Records NS
 
 <a id="cmd-2-ns"></a>
 
-**Linux**
+**Linux / macOS**
 
 ```bash
 dig NS readresolve.tech
 ```
 
-[Sortie + analyse](tp-analyses/2-ns.md)
+[Sortie + analyse](tp-analyses/linux-macos/2-ns.md)
 
 **Windows**
 
@@ -168,19 +152,19 @@ dig NS readresolve.tech
 Resolve-DnsName -Name "readresolve.tech" -Type NS
 ```
 
-[Sortie + analyse](tp-analyses/2-ns.md)
+[Sortie + analyse](tp-analyses/windows/2-ns.md)
 
 ### Records MX
 
 <a id="cmd-2-mx"></a>
 
-**Linux**
+**Linux / macOS**
 
 ```bash
 dig MX readresolve.tech
 ```
 
-[Sortie + analyse](tp-analyses/2-mx.md)
+[Sortie + analyse](tp-analyses/linux-macos/2-mx.md)
 
 **Windows**
 
@@ -188,19 +172,19 @@ dig MX readresolve.tech
 Resolve-DnsName -Name "readresolve.tech" -Type MX
 ```
 
-[Sortie + analyse](tp-analyses/2-mx.md)
+[Sortie + analyse](tp-analyses/windows/2-mx.md)
 
 ### Record TXT
 
 <a id="cmd-2-txt"></a>
 
-**Linux**
+**Linux / macOS**
 
 ```bash
 dig TXT readresolve.tech
 ```
 
-[Sortie + analyse](tp-analyses/2-txt.md)
+[Sortie + analyse](tp-analyses/linux-macos/2-txt.md)
 
 **Windows**
 
@@ -208,19 +192,19 @@ dig TXT readresolve.tech
 Resolve-DnsName -Name "readresolve.tech" -Type TXT
 ```
 
-[Sortie + analyse](tp-analyses/2-txt.md)
+[Sortie + analyse](tp-analyses/windows/2-txt.md)
 
 ### `www` — A
 
 <a id="cmd-2-www-a"></a>
 
-**Linux**
+**Linux / macOS**
 
 ```bash
 dig A www.readresolve.tech
 ```
 
-[Sortie + analyse](tp-analyses/2-www-a.md)
+[Sortie + analyse](tp-analyses/linux-macos/2-www-a.md)
 
 **Windows**
 
@@ -228,19 +212,19 @@ dig A www.readresolve.tech
 Resolve-DnsName -Name "www.readresolve.tech" -Type A
 ```
 
-[Sortie + analyse](tp-analyses/2-www-a.md)
+[Sortie + analyse](tp-analyses/windows/2-www-a.md)
 
 ### `www` — CNAME
 
 <a id="cmd-2-www-cname"></a>
 
-**Linux**
+**Linux / macOS**
 
 ```bash
 dig CNAME www.readresolve.tech
 ```
 
-[Sortie + analyse](tp-analyses/2-www-cname.md)
+[Sortie + analyse](tp-analyses/linux-macos/2-www-cname.md)
 
 **Windows**
 
@@ -248,19 +232,19 @@ dig CNAME www.readresolve.tech
 Resolve-DnsName -Name "www.readresolve.tech" -Type CNAME
 ```
 
-[Sortie + analyse](tp-analyses/2-www-cname.md)
+[Sortie + analyse](tp-analyses/windows/2-www-cname.md)
 
 ### Whois
 
 <a id="cmd-2-whois"></a>
 
-**Linux**
+**Linux / macOS**
 
 ```bash
 whois readresolve.tech
 ```
 
-[Sortie + analyse](tp-analyses/2-whois.md)
+[Sortie + analyse](tp-analyses/linux-macos/2-whois.md)
 
 **Windows** : pas d’équivalent.
 
@@ -287,13 +271,13 @@ Objectif : l’IP est-elle **joignable**, et **par où** (approximativement) ?
 
 <a id="cmd-3-ping"></a>
 
-**Linux**
+**Linux / macOS**
 
 ```bash
 ping -c 4 54.36.100.9
 ```
 
-[Sortie + analyse](tp-analyses/3-ping.md)
+[Sortie + analyse](tp-analyses/linux-macos/3-ping.md)
 
 **Windows**
 
@@ -301,19 +285,19 @@ ping -c 4 54.36.100.9
 ping 54.36.100.9
 ```
 
-[Sortie + analyse](tp-analyses/3-ping.md)
+[Sortie + analyse](tp-analyses/windows/3-ping.md)
 
 ### Traceroute
 
 <a id="cmd-3-traceroute"></a>
 
-**Linux**
+**Linux / macOS**
 
 ```bash
 traceroute 54.36.100.9
 ```
 
-[Sortie + analyse](tp-analyses/3-traceroute.md)
+[Sortie + analyse](tp-analyses/linux-macos/3-traceroute.md)
 
 **Windows**
 
@@ -321,19 +305,19 @@ traceroute 54.36.100.9
 tracert 54.36.100.9
 ```
 
-[Sortie + analyse](tp-analyses/3-traceroute.md)
+[Sortie + analyse](tp-analyses/windows/3-traceroute.md)
 
 ### Variante sondes / affichage
 
 <a id="cmd-3-traceroute-icmp"></a>
 
-**Linux**
+**Linux / macOS**
 
 ```bash
 traceroute -I 54.36.100.9
 ```
 
-[Sortie + analyse](tp-analyses/3-traceroute-icmp.md)
+[Sortie + analyse](tp-analyses/linux-macos/3-traceroute-icmp.md)
 
 **Windows**
 
@@ -341,7 +325,7 @@ traceroute -I 54.36.100.9
 tracert -d 54.36.100.9
 ```
 
-[Sortie + analyse](tp-analyses/3-traceroute-icmp.md)
+[Sortie + analyse](tp-analyses/windows/3-traceroute-icmp.md)
 
 **À reconnaître** : box (`192.168.x.x`) → FAI → plages OVH → `54.36.100.9`. Les `* * *` ≠ lien cassé.
 
@@ -357,6 +341,8 @@ tracert -d 54.36.100.9
 
 Objectif : firewall local (`iptables`), **qui écoute** (ports / sockets), reverse proxy frontend → backend.
 
+Commandes **VPS** = bash Linux (même depuis un PC Windows, via SSH).
+
 ### 5a. Lire le firewall — VPS
 
 <a id="cmd-5-iptables-list"></a>
@@ -365,7 +351,9 @@ Objectif : firewall local (`iptables`), **qui écoute** (ports / sockets), rever
 sudo iptables -L -n -v --line-numbers
 ```
 
-[Sortie + analyse](tp-analyses/5-iptables-list.md)
+[Sortie + analyse](tp-analyses/linux-macos/5-iptables-list.md)
+
+**Windows** : pas d’équivalent.
 
 <a id="cmd-5-iptables-rules"></a>
 
@@ -373,7 +361,9 @@ sudo iptables -L -n -v --line-numbers
 sudo cat /etc/iptables/rules.v4
 ```
 
-[Sortie + analyse](tp-analyses/5-iptables-rules.md)
+[Sortie + analyse](tp-analyses/linux-macos/5-iptables-rules.md)
+
+**Windows** : pas d’équivalent.
 
 ### 5b. Atelier port 443 — Local puis VPS
 
@@ -381,13 +371,13 @@ sudo cat /etc/iptables/rules.v4
 
 <a id="cmd-5-curl-https"></a>
 
-**Linux**
+**Linux / macOS**
 
 ```bash
 curl -I --max-time 8 https://readresolve.tech
 ```
 
-[Sortie + analyse](tp-analyses/5-curl-https.md)
+[Sortie + analyse](tp-analyses/linux-macos/5-curl-https.md)
 
 **Windows**
 
@@ -395,7 +385,7 @@ curl -I --max-time 8 https://readresolve.tech
 curl.exe -I --max-time 8 https://readresolve.tech
 ```
 
-[Sortie + analyse](tp-analyses/5-curl-https.md)
+[Sortie + analyse](tp-analyses/windows/5-curl-https.md)
 
 **VPS** (ne pas toucher au SSH / ports 22 ou 64483) :
 
@@ -405,7 +395,9 @@ curl.exe -I --max-time 8 https://readresolve.tech
 sudo iptables -I INPUT 1 -p tcp --dport 443 -j DROP
 ```
 
-[Sortie + analyse](tp-analyses/5-iptables-drop.md)
+[Sortie + analyse](tp-analyses/linux-macos/5-iptables-drop.md)
+
+**Windows** : pas d’équivalent.
 
 <a id="cmd-5-iptables-input"></a>
 
@@ -413,7 +405,9 @@ sudo iptables -I INPUT 1 -p tcp --dport 443 -j DROP
 sudo iptables -L INPUT --line-numbers
 ```
 
-[Sortie + analyse](tp-analyses/5-iptables-input.md)
+[Sortie + analyse](tp-analyses/linux-macos/5-iptables-input.md)
+
+**Windows** : pas d’équivalent.
 
 <a id="cmd-5-iptables-delete"></a>
 
@@ -421,7 +415,9 @@ sudo iptables -L INPUT --line-numbers
 sudo iptables -D INPUT 1
 ```
 
-[Sortie + analyse](tp-analyses/5-iptables-delete.md)
+[Sortie + analyse](tp-analyses/linux-macos/5-iptables-delete.md)
+
+**Windows** : pas d’équivalent.
 
 `ping 54.36.100.9` peut rester OK : ICMP ≠ HTTPS.
 
@@ -433,7 +429,9 @@ sudo iptables -D INPUT 1
 sudo ss -tlnp
 ```
 
-[Sortie + analyse](tp-analyses/5-ss.md)
+[Sortie + analyse](tp-analyses/linux-macos/5-ss.md)
+
+**Windows** : pas d’équivalent.
 
 <a id="cmd-5-ss-grep"></a>
 
@@ -441,7 +439,9 @@ sudo ss -tlnp
 sudo ss -tlnp | grep -E ':80|:443|:22|:64483|:90'
 ```
 
-[Sortie + analyse](tp-analyses/5-ss-grep.md)
+[Sortie + analyse](tp-analyses/linux-macos/5-ss-grep.md)
+
+**Windows** : pas d’équivalent.
 
 Repérer : `*:80` / `*:443` (public) vs `127.0.0.1:…` (local seulement).
 
@@ -449,13 +449,13 @@ Repérer : `*:80` / `*:443` (public) vs `127.0.0.1:…` (local seulement).
 
 <a id="cmd-5d-curl"></a>
 
-**Linux**
+**Linux / macOS**
 
 ```bash
 curl -I https://readresolve.tech
 ```
 
-[Sortie + analyse](tp-analyses/5-curl-https.md)
+[Sortie + analyse](tp-analyses/linux-macos/5-curl-https.md)
 
 **Windows**
 
@@ -463,17 +463,17 @@ curl -I https://readresolve.tech
 curl.exe -I https://readresolve.tech
 ```
 
-[Sortie + analyse](tp-analyses/5-curl-https.md)
+[Sortie + analyse](tp-analyses/windows/5-curl-https.md)
 
 <a id="cmd-5-nmap"></a>
 
-**Linux**
+**Linux / macOS**
 
 ```bash
 nmap -sV -p 22,80,443 54.36.100.9
 ```
 
-[Sortie + analyse](tp-analyses/5-nmap.md)
+[Sortie + analyse](tp-analyses/linux-macos/5-nmap.md)
 
 **Windows**
 
@@ -481,7 +481,7 @@ nmap -sV -p 22,80,443 54.36.100.9
 nmap -sV -p 22,80,443 54.36.100.9
 ```
 
-[Sortie + analyse](tp-analyses/5-nmap.md)
+[Sortie + analyse](tp-analyses/windows/5-nmap.md)
 
 `nmap` uniquement vers **notre** VPS.
 
@@ -493,7 +493,9 @@ nmap -sV -p 22,80,443 54.36.100.9
 sudo apache2ctl -S
 ```
 
-[Sortie + analyse](tp-analyses/5-apache-s.md)
+[Sortie + analyse](tp-analyses/linux-macos/5-apache-s.md)
+
+**Windows** : pas d’équivalent.
 
 <a id="cmd-5-apache-m"></a>
 
@@ -501,7 +503,9 @@ sudo apache2ctl -S
 sudo apache2ctl -M
 ```
 
-[Sortie + analyse](tp-analyses/5-apache-m.md)
+[Sortie + analyse](tp-analyses/linux-macos/5-apache-m.md)
+
+**Windows** : pas d’équivalent.
 
 <a id="cmd-5-ls-sites"></a>
 
@@ -509,7 +513,9 @@ sudo apache2ctl -M
 ls -la /etc/apache2/sites-enabled/
 ```
 
-[Sortie + analyse](tp-analyses/5-ls-sites.md)
+[Sortie + analyse](tp-analyses/linux-macos/5-ls-sites.md)
+
+**Windows** : pas d’équivalent.
 
 <a id="cmd-5-grep-apache"></a>
 
@@ -517,7 +523,9 @@ ls -la /etc/apache2/sites-enabled/
 sudo grep -RniE 'ProxyPass|ProxyPassReverse|ServerName|VirtualHost|Listen' /etc/apache2/
 ```
 
-[Sortie + analyse](tp-analyses/5-grep-apache.md)
+[Sortie + analyse](tp-analyses/linux-macos/5-grep-apache.md)
+
+**Windows** : pas d’équivalent.
 
 ---
 
