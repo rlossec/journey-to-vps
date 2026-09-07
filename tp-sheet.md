@@ -10,13 +10,18 @@ Donc connectez vous au VPS :
 ssh mbr-********@54.36.100.9 -p 64483
 ```
 
-Il y a qq fois équivalence mais souvent les commandes différent entre le os.
-Il y a du bon à prendre dans les deux.
+Il y a qq fois équivalence mais souvent la nature des commandes différent entre les OS.
+Il y a du bon à prendre dans les deux.  
 
 Après chaque commande, un bandeau **🐧 Linux / macOS** et **🪟 Windows** : le lien ouvre l’analyse de **votre** OS.
+
 S’il n’y a pas d’équivalent, c’est indiqué en italique, sans fiche.
 
-Chaque fiche rappelle la commande, montre une sortie attendue, commente les lignes utiles, et ramène ici.
+Chaque fiche contient :
+- un rappel de la commande, 
+- un exemple de sortie attendue,
+- une analyse des lignes utiles,
+- un lien vers cette page 
 
 ---
 
@@ -94,6 +99,8 @@ Objectif : Découvrir les enregistrements sur le VPS
 
 ```bash
 dig A readresolve.tech
+```
+```bash
 dig AAAA readresolve.tech
 ```
 
@@ -101,6 +108,8 @@ dig AAAA readresolve.tech
 
 ```powershell
 Resolve-DnsName -Name "readresolve.tech" -Type A
+```
+```powershell
 Resolve-DnsName -Name "readresolve.tech" -Type AAAA
 ```
 
@@ -176,7 +185,7 @@ Zone dans la console OVH : capture / démo formateur.
 
 ## 3. Routage Internet
 
-Objectif : l’IP est-elle **joignable**, et **par où** (approximativement) ?
+Objectif : l’IP est-elle **joignable**, et **par où** ?
 
 ### Ping
 
@@ -225,8 +234,6 @@ traceroute -I 54.36.100.9
 ```powershell
 tracert -d 54.36.100.9
 ```
-
-**À reconnaître** : box (`192.168.x.x`) → FAI → plages OVH → `54.36.100.9`. Les `* * *` ≠ lien cassé.
 
 ---
 

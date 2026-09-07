@@ -2,10 +2,11 @@
 
 # Records A et AAAA (`readresolve.tech`)
 
-**But :** IPv4 publiée, et s’il existe une IPv6. Ici : A oui, AAAA non.
-
 ```bash
 dig A readresolve.tech
+```
+
+```bash
 dig AAAA readresolve.tech
 ```
 
