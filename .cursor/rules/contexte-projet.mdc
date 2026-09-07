@@ -19,7 +19,7 @@ Intro : `explanations/0-intro.md` — (1) acteurs sans cas d’étude, (2) cas d
 2. Enregistrement DNS (domaine, zone, IP publique, records, TTL)
 3. Routage Internet (BGP concept)
 4. Infrastructure OVH (HCAP, backbone, edge FW, DC)
-5. Notre configuration : firewall VPS (`iptables`), ports / sockets, reverse proxy frontend → backend
+5. VPS configuration : firewall VPS (`iptables`), ports / sockets, reverse proxy frontend → backend
 
 ## Format
 
