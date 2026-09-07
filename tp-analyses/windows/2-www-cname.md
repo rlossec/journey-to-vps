@@ -1,4 +1,4 @@
-← [Retour à la feuille TP](../../tp-sheet.md#cmd-2-www-cname)
+← [Retour à la feuille TP](../../tp-sheet.md#cmd-2-cname)
 
 # Record CNAME (`www.readresolve.tech`)
 
@@ -23,4 +23,4 @@ readresolve.tech  SOA  300 Authority dns13.ovh.net
 | `ANSWER: 0` + `SOA` | Pas de CNAME pour `www` (même schéma que l’AAAA absent). |
 | Conclusion | `www` est un **A** vers `54.36.100.9`, pas un alias vers l’apex. |
 
-← [Retour à la feuille TP](../../tp-sheet.md#cmd-2-www-cname)
+← [Retour à la feuille TP](../../tp-sheet.md#cmd-2-cname)
