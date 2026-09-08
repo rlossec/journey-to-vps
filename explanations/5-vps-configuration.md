@@ -1,16 +1,20 @@
 # 5. Configuration du VPS
 
-Nos données ont traversé le DNS, routage et l'infrastructure OVH (étape 4). Il arrive enfin sur **notre** machine. Tout ce qui suit est **sous notre contrôle**.
+Nos données ont traversé le DNS, routage et l'infrastructure OVH (étape 4). Il arrive enfin sur **notre** machine.
 
-Avant de voir qui écoute et comment, posons le vocabulaire. Les protocoles (TCP, HTTP, HTTPS, TLS) restent une **autre** présentation. On les croise : port **80** / **443**, `Server: Apache` dans les en-têtes.
+Avant de rentrer dans le VPS, un peu de théorie.
 
 ## Théorie
 
 ### Ports — le numéro d'appartement
 
-Un **port** est un numéro (0–65 535) qui identifie un service sur une machine. L'IP seule désigne **le bâtiment** (le serveur) ; le port désigne **l'appartement** dans ce bâtiment.
+Un **port** est un numéro (0–65 535) qui identifie un service sur une machine. 
 
-> **Analogie** : le facteur (Internet) livre un colis au **54 rue de la Formation** (l'IP `54.36.100.9`). Il regarde ensuite le **numéro d'appartement** sur l'étiquette pour savoir **à quelle porte** frapper. Port **22** → appartement SSH (souvent), port **443** → appartement HTTPS, etc.
+L'IP seule désigne **le bâtiment** (le serveur) :
+- le port désigne **l'appartement** dans ce bâtiment.
+- les personnes dans les appartements les services
+
+> **Analogie** : le facteur (Internet) livre un colis au **54 rue de Beaune** (l'IP `54.36.100.9`). Il regarde ensuite le **numéro d'appartement** sur l'étiquette pour savoir **à quelle porte** frapper. Port **22** → appartement SSH (souvent), port **443** → appartement HTTPS, etc.
 
 Sans numéro de port, le paquet arrive au bâtiment mais personne ne sait à qui il est destiné.
 
