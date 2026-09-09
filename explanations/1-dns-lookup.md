@@ -1,31 +1,34 @@
 # 1. Résolution DNS
 
-## 1.1. Théorie
+## 1.1. Théorie - Diapo 8
 
-A l'étape précédente, on a accédé à `https://mbr-raphael.readresolve.tech`.
+Les divers dispositifs informatiques fonctionnent avec des nombres. En l'occurence quand on accède à un site internet, on doit rapatrier les donnés pour le construire. Et avant même de la rapatrier on doit connaître l'endroit où sont ces données.
 
-Comme pour n’importe quel site, il va devoir transformer l'url en IP. Les outils informatiques fonctionnent avec des nombres et pour le Protocol Internet, c’est l’IP qui fait foi.
+Ainsi nous nous tapons l'url `https://mbr-me.readresolve.tech`, le navigateur doit déjà trouver l'IP du serveur qui héberge le site
 
-Quand on fait cette conversion, on dit que l’on résout le nom de domaine.
+> **Définition
+> Quand le navigateur convertit l'url en IP on dit que l’on **résout le nom de domaine**.
 
-On imagine dans un premier temps qu'on vient d'emménager, qu'on a acheté un nouvel ordinateur et qu'on consulte notre site que l'on vient de lancer à la seconde prêt.
-Un ensemble de coïncidence tout a fait classique.
 
-Notre navigateur via notre box va faire intervenir un Résolveur DNS (de notre FAI) qui aura la tâche de trouver l'IP associée à l'url que l'on a donné.
+> Hypothèse pour notre cas d'étude
+>  On imagine qu'on vient d'emménager, qu'on a acheté un nouvel ordinateur et qu'on consulte notre site que l'on vient de lancer à la seconde prêt.
 
-Pour cela il va déjà analysé notre url et faire une requête DNS.
+Quand nous validons l'url `https://mbr-me.readresolve.tech` dans le navigateur, la première mission du navigateur va être de **Résoudre le nom de domaine**.
+A ce moment le navigateur via notre box va faire intervenir un **Résolveur DNS** qui aura la tâche de trouver l'IP associée à l'url que l'on a donné.
 
-### 0 - Compréhension d'url
+Le résolveur DNS va être central par la suite.
+
+### 1.1.1. - Compréhension d'url
 
 Pour bien comprendre la suite des étapes il faut bien analyser l'url et son découpage.
 
 [Schema Découpage Url](../excalidraw/1-dns-lookup/1-1-url-explanations.excalidraw)
 
-On a plusieurs parties,
+Dans `https://mbr-me.readresolve.tech`, on a plusieurs parties :
 
 - `.tech` correspond au **Top Level Domain** : TLD
-- `readresolve` correspond **au nom de domaine**
-- `mbr-me` enfin correspond à un sous domaine
+- `readresolve` correspond **nom de domaine**
+- `mbr-me` enfin correspond à un **sous domaine**
 
 Illustrons cela avec Google et ses services.
 
@@ -34,56 +37,52 @@ Illustrons cela avec Google et ses services.
 On a cet arbre avec
 
 - en haut le root,
-- puis `.com` qui est l'extension la plus utilisé et donc le TLD ici.
+- puis `.com` le TLD ici.
 - puis le nom de domaine : `google`
-- et de multiples sous-domaines, qui représente les différences services google.
+- et de multiples sous-domaines, qui représente les différences services Google.
 
-### Intro resolver
+### 1.1.2. Les acteurs de la résolution
 
-Avec cela en tête passons au fonctionnement du Resolver DNS.
-Comme je l'avais indiqué, c'est propre à notre FAI, même si des alternatives existent.
+Comme on l'a indiqué le personnage principal de la résolution est le Resolver DNS. Il va centralisé la Résolution et aller demander à chaque acteur secondaire, de l'aide pour résoudre l'url.
+
+Ces trois acteurs sont très hiérachiques :
+- les **root Servers** en haut
+- les **TLD Servers** au milieu
+- le **serveur d'autorité** en bas
+
+Chacun va renvoyer au suivant, de façon très administratives :
+https://klipy.com/gifs/asterix-a38
+
+### 1.1.3. Que savent ils chacun ?
+
+Partons d'en bas, le serveur d'autorité pour notre exemple `https://mbr-me.readresolve.tech` est un serveur DNS d'OVH qui va contenir tous les associations domaine <-> IP des sites hébergés chez eux.
+Pour trouver ce serveur d'autorité, un TLD server contient l'information de ce serveur d'autorité (parmi plein d'autres).
+Et pour trouver le serveur TLD, il faut solliciter un root serveur.
+
+### 1.1.4. L'orchestration du resolver
+
+Ainsi, quand le DNS Resolver recoit `https://mbr-me.readresolve.tech`, il ne sait évidemment pas que c'est chez OVH, il n'a que ce nom de domaine.
+Par contre il connait la procédure :
+ 1. le resolver doit d'abord solliciter les "patrons" : les root servers. Il leur dit "Alors là je cherche les responsables des `.tech`
+ 2. le root serveur le plus rapide lui répond "le responsables des .tech c'est le serveur TLD `ns01.trs-dns.com`"
+ 3. le resolveur sollicite donc le serveur TLD `ns01.trs-dns.com` : Qui s'occupe de `readresolve` ? (ou qui est le serveur d'autorité)
+ 4. le serveur TLD `ns01.trs-dns.com` répond: "Ah le serveur d'autorité pour `readresolve` c'est `ns13.ovh.net`"
+ 5. le resolveur sollicite donc le serveur d'autorité `ns13.ovh.net` et demande "Tu dois connaitre l'IP de mbr-me.readresolve.tech, c'est ton boulot"
+ 6. et enfin le serveur d'autorité donne l'IP du serveur qui héberge : `54.36.100.8` :sweat_smile: 
+
 
 [Schema Resolution DNS](../excalidraw/1-dns-lookup/1-5-dns-lookup.excalidraw)
 
-### Etape 1 : Root Server
-
-Pour la première étape notre résolveur va se concentrer sur la terminaison.
-Son objectif, trouver le TLD server qui s'occupe de la terminaison `.tech`
-
-Il doit pour cela faire la demande à ce qu'on appelle les Root servers.
-Ils sont au nombre de 13 dans le monde en terme d'identité. Ils sont symbolisés par les lettres de A à M.
-
-Evidemment, pour chacun de ces 13 identités, ils existent des centaines d'instance dans le monde. Internet ne peut pas dépendre d'uniquement 13 entités.
-
-Parmi ces 13 root server, le plus rapide répondera donc à la requête DNS par l'ip du serveur TLD, c'est à dire ici celui qui gère le `.tech`. Les serveurs root n'ont pas d'autre informations.
-
-A la fin de l'étape, retour donc au Résolveur DNS de notre FAI mais avec l'information ou **l'ip du TLD responsable des `.tech`.**
-
-### Etape 2 : TLD Server
-
-Evidemment maintenant qu'on a l'info du TLD Server, on va lui soumettre une requête, du type "Eh toi qui connait les .tech, tu saurais qui est responsable DNS de ce nom de domaine : `readresolve` ?
-Et il va nous répondre pas avec l'ip finale du VPS mais avec ce qu'on appelle le serveur autoritaire de notre nom de domaine. Comme notre VPS est à OVH, il s'agira d'un serveur DNS d'OVH.
-
-A la fin de l'étape retour donc au Résolveur DNS de notre FAI mais avec **l'ip du serveur autoritaire pour `readresolve.tech`**.
-
-### Etape 3 : Serveur autoritaire
-
-Et nous voilà à la dernière étape, on connait le serveur autoritaire qui lui a l'information de l'ip du VPS ! On demande donc cet ip au serveur autoritaire.
-
-Et fin de la résolution !
-
-Si on revient à notre url, on a pas parlé du sous domaine. En effet, ce n'est pas la responsabilité du Resolver DNS, on en parlera plus tard.
-
-### Récap
+### 1.1.5. Récap
 
 Quatre rôles à distinguer :
 
-| Rôle                   | Question à laquelle il répond               | Exemple ici                                                        |
+| Rôle                   | Question à laquelle il répond               | L'acteur                                                           |
 | ---------------------- | ------------------------------------------- | ------------------------------------------------------------------ |
-| **Résolveur récursif** | « Trouve-moi l’IP, je m’occupe du reste »   | FAI, Google `8.8.8.8`, Cloudflare `1.1.1.1`                        |
-| **Racine (Root)**      | « Qui gère ce TLD ? »                       | 13 identités **A** à **M**, des milliers d’instances dans le monde |
+| **Résolveur récursif** | Aucune, il trouve ceux qui répondent        | FAI                                                                |
+| **Root**               | « Qui gère ce TLD ? »                       | 13 identités **A** à **M**, des milliers d’instances dans le monde |
 | **TLD**                | « Qui est autoritaire pour ce domaine ? »   | `.tech` → `ns01.trs-dns.com`, …                                    |
-| **Autoritaire**        | « Quelle est **la** réponse pour ce nom ? » | `dns13.ovh.net` / `ns13.ovh.net`                                   |
+| **Autoritaire**        | « Quelle est l'ip pour ce nom ? »           | `dns13.ovh.net` / `ns13.ovh.net`                                   |
 
 La racine **ne connaît pas** l’IP de `readresolve.tech`. Elle sait seulement où sont les serveurs `.tech`. Le TLD **ne connaît pas** forcément l’IP non plus : il pointe vers les serveurs de noms du domaine.
 
