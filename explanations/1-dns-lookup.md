@@ -2,29 +2,30 @@
 
 ## 1.1. Théorie - Diapo 8
 
-Les divers dispositifs informatiques fonctionnent avec des nombres. En l'occurence quand on accède à un site internet, on doit rapatrier les donnés pour le construire. Et avant même de la rapatrier on doit connaître l'endroit où sont ces données.
+Les divers dispositifs informatiques fonctionnent avec des nombres. En l'occurence quand on accède à un site internet, on doit rapatrier les donnés pour le construire. Et avant même de les rapatrier on doit connaître l'endroit où sont ces données.  
 
-Ainsi nous nous tapons l'url `https://mbr-me.readresolve.tech`, le navigateur doit déjà trouver l'IP du serveur qui héberge le site
+Ainsi nous nous tapons l'url `https://google.com`, le navigateur doit déjà trouver l'IP du serveur qui héberge le site.  
 
-> **Définition
-> Quand le navigateur convertit l'url en IP on dit que l’on **résout le nom de domaine**.
+> **_Définition_**  
+> Quand le navigateur convertit l'`hostname` en IP on dit que l’on **résout le nom d'hôte ou hostname**.  
 
+> **Hypothèse de départ**  
+>  On imagine qu'on vient d'emménager, qu'on a acheté un nouvel ordinateur et qu'on consulte notre site que l'on vient de lancer à la seconde prêt.  
 
-> Hypothèse pour notre cas d'étude
->  On imagine qu'on vient d'emménager, qu'on a acheté un nouvel ordinateur et qu'on consulte notre site que l'on vient de lancer à la seconde prêt.
-
-Quand nous validons l'url `https://mbr-me.readresolve.tech` dans le navigateur, la première mission du navigateur va être de **Résoudre le nom de domaine**.
-A ce moment le navigateur via notre box va faire intervenir un **Résolveur DNS** qui aura la tâche de trouver l'IP associée à l'url que l'on a donné.
+Quand nous validons l'url `https://google.com` dans le navigateur, la première mission du navigateur va être de **Résoudre le `hostname`** `google.com`.  
+A ce moment le navigateur via notre box va faire intervenir un **DNS Resolver** qui aura la tâche de trouver l'IP associée au `hostname` que l'on a donné.
 
 Le résolveur DNS va être central par la suite.
 
-### 1.1.1. - Compréhension d'url
+### 1.1.1. - Compréhension du `hostname`
 
-Pour bien comprendre la suite des étapes il faut bien analyser l'url et son découpage.
+Pour bien comprendre la suite des étapes il faut bien analyser le `hostname` et son découpage.
 
-[Schema Découpage Url](../excalidraw/1-dns-lookup/1-1-url-explanations.excalidraw)
+Prenons le nom d'hôte de notre cas d'étude : `https://mbr-me.readresolve.tech`
 
-Dans `https://mbr-me.readresolve.tech`, on a plusieurs parties :
+[Schema Découpage Hostname(../excalidraw/1-dns-lookup/1-1-url-explanations.excalidraw)
+
+Dans `mbr-me.readresolve.tech`, on a plusieurs parties :
 
 - `.tech` correspond au **Top Level Domain** : TLD
 - `readresolve` correspond **nom de domaine**
@@ -43,25 +44,26 @@ On a cet arbre avec
 
 ### 1.1.2. Les acteurs de la résolution
 
-Comme on l'a indiqué le personnage principal de la résolution est le Resolver DNS. Il va centralisé la Résolution et aller demander à chaque acteur secondaire, de l'aide pour résoudre l'url.
+Comme on l'a indiqué le personnage principal de la résolution est le Resolver DNS. Il va centralisé la Résolution et aller demander à chaque acteur secondaire, de l'aide pour résoudre le `hostname`.
 
 Ces trois acteurs sont très hiérachiques :
-- les **root Servers** en haut
-- les **TLD Servers** au milieu
+- les **root servers** en haut
+- les **TLD servers** au milieu
 - le **serveur d'autorité** en bas
 
-Chacun va renvoyer au suivant, de façon très administratives :
-https://klipy.com/gifs/asterix-a38
+Chacun va renvoyer au suivant, de façon très administrative, sans avoir plus d'informations.
+
+![Gif Astérix : Formulaire A38](../img/asterix-A38.gif)
 
 ### 1.1.3. Que savent ils chacun ?
 
-Partons d'en bas, le serveur d'autorité pour notre exemple `https://mbr-me.readresolve.tech` est un serveur DNS d'OVH qui va contenir tous les associations domaine <-> IP des sites hébergés chez eux.
+Partons d'en bas, le serveur d'autorité pour notre exemple `mbr-me.readresolve.tech` est un serveur DNS d'OVH qui va contenir tous les associations domaine <-> IP des sites hébergés chez eux.
 Pour trouver ce serveur d'autorité, un TLD server contient l'information de ce serveur d'autorité (parmi plein d'autres).
 Et pour trouver le serveur TLD, il faut solliciter un root serveur.
 
 ### 1.1.4. L'orchestration du resolver
 
-Ainsi, quand le DNS Resolver recoit `https://mbr-me.readresolve.tech`, il ne sait évidemment pas que c'est chez OVH, il n'a que ce nom de domaine.
+Ainsi, quand le DNS Resolver recoit `mbr-me.readresolve.tech`, il ne sait évidemment pas que c'est chez OVH, il n'a que ce nom de domaine.
 Par contre il connait la procédure :
  1. le resolver doit d'abord solliciter les "patrons" : les root servers. Il leur dit "Alors là je cherche les responsables des `.tech`
  2. le root serveur le plus rapide lui répond "le responsables des .tech c'est le serveur TLD `ns01.trs-dns.com`"
@@ -71,7 +73,7 @@ Par contre il connait la procédure :
  6. et enfin le serveur d'autorité donne l'IP du serveur qui héberge : `54.36.100.8` :sweat_smile: 
 
 
-[Schema Resolution DNS](../excalidraw/1-dns-lookup/1-5-dns-lookup.excalidraw)
+[Schema Résolution DNS](../excalidraw/1-dns-lookup/1-5-dns-lookup.excalidraw)
 
 ### 1.1.5. Récap
 
@@ -84,7 +86,7 @@ Quatre rôles à distinguer :
 | **TLD**                | « Qui est autoritaire pour ce domaine ? »   | `.tech` → `ns01.trs-dns.com`, …                                    |
 | **Autoritaire**        | « Quelle est l'ip pour ce nom ? »           | `dns13.ovh.net` / `ns13.ovh.net`                                   |
 
-La racine **ne connaît pas** l’IP de `readresolve.tech`. Elle sait seulement où sont les serveurs `.tech`. Le TLD **ne connaît pas** forcément l’IP non plus : il pointe vers les serveurs de noms du domaine.
+Le serveur root **ne connaît pas** l’IP de `readresolve.tech`. Il sait seulement où sont les serveurs `.tech`. Le TLD **ne connaît pas** forcément l’IP non plus : il pointe vers les serveurs faisant autorité.
 
 ## 1.2. Pratique
 
