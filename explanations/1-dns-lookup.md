@@ -2,16 +2,16 @@
 
 ## 1.1. Théorie
 
-A l'étape précédente, on a accédé à `https://mbr-raphael.readresolve.tech`.
+A l'étape précédente, on a accédé à `https://mbr-<user>.readresolve.tech`.
 
-Comme pour n’importe quel site, il va devoir transformer l'url en IP. Les outils informatiques fonctionnent avec des nombres et pour le Protocol Internet, c’est l’IP qui fait foi.
+Comme pour n’importe quel site, il va devoir transformer l'url en IP. Les outils informatiques fonctionnent avec des nombres et pour Internet, c’est l’IP qui fait foi.
 
-Quand on fait cette conversion, on dit que l’on résout le nom de domaine.
+Quand on fait cette conversion, on dit que **l’on résout le nom de domaine**.
 
 On imagine dans un premier temps qu'on vient d'emménager, qu'on a acheté un nouvel ordinateur et qu'on consulte notre site que l'on vient de lancer à la seconde prêt.
 Un ensemble de coïncidence tout a fait classique.
 
-Notre navigateur via notre box va faire intervenir un Résolveur DNS (de notre FAI) qui aura la tâche de trouver l'IP associée à l'url que l'on a donné.
+Notre navigateur via notre box va faire intervenir un Résolveur DNS qui aura la tâche de trouver l'IP associée à l'url que l'on a donné.
 
 Pour cela il va déjà analysé notre url et faire une requête DNS.
 
@@ -19,6 +19,7 @@ Pour cela il va déjà analysé notre url et faire une requête DNS.
 
 Pour bien comprendre la suite des étapes il faut bien analyser l'url et son découpage.
 
+[!image-split-hostname](../img/split-hostname.png)
 [Schema Découpage Url](../excalidraw/1-dns-lookup/1-1-url-explanations.excalidraw)
 
 On a plusieurs parties,
@@ -29,16 +30,17 @@ On a plusieurs parties,
 
 Illustrons cela avec Google et ses services.
 
+[!google-hostname-example](../img/1-google-hostname-example.png)
 [Schema Arbre Url](../excalidraw/1-dns-lookup/1-2-url-tree.excalidraw)
 
-On a cet arbre avec
+On a cet arbre avec :
 
 - en haut le root,
 - puis `.com` qui est l'extension la plus utilisé et donc le TLD ici.
 - puis le nom de domaine : `google`
 - et de multiples sous-domaines, qui représente les différences services google.
 
-### Intro resolver
+### 1 - Intro resolver
 
 Avec cela en tête passons au fonctionnement du Resolver DNS.
 Comme je l'avais indiqué, c'est propre à notre FAI, même si des alternatives existent.
