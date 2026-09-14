@@ -13,7 +13,7 @@ Ainsi nous nous tapons l'url `https://google.com`, le navigateur doit déjà tro
 >  On imagine qu'on vient d'emménager, qu'on a acheté un nouvel ordinateur et qu'on consulte notre site que l'on vient de lancer à la seconde prêt.  
 
 Quand nous validons l'url `https://google.com` dans le navigateur, la première mission du navigateur va être de **Résoudre le `hostname`** `google.com`.  
-A ce moment le navigateur via notre box va faire intervenir un **DNS Resolver** qui aura la tâche de trouver l'IP associée au `hostname` que l'on a donné.
+A ce moment le navigateur via notre box va faire intervenir un **DNS Resolver** qui aura la tâche de trouver l'IP associée au `hostname` que l'on a donné.  
 
 Le résolveur DNS va être central par la suite.
 
@@ -23,7 +23,8 @@ Pour bien comprendre la suite des étapes il faut bien analyser le `hostname` et
 
 Prenons le nom d'hôte de notre cas d'étude : `https://mbr-me.readresolve.tech`
 
-[Schema Découpage Hostname(../excalidraw/1-dns-lookup/1-1-url-explanations.excalidraw)
+[Schema Découpage Hostname](../excalidraw/1-dns-lookup/1-1-url-explanations.excalidraw)
+![Image du Schéma Découpage Hostname](../img/1-1-split-hostname.png)
 
 Dans `mbr-me.readresolve.tech`, on a plusieurs parties :
 
@@ -33,7 +34,7 @@ Dans `mbr-me.readresolve.tech`, on a plusieurs parties :
 
 Illustrons cela avec Google et ses services.
 
-[!google-hostname-example](../img/1-google-hostname-example.png)
+![google-hostname-example](../img/1-google-hostname-example.png)
 [Schema Arbre Url](../excalidraw/1-dns-lookup/1-2-url-tree.excalidraw)
 
 On a cet arbre avec :
@@ -50,7 +51,7 @@ Comme on l'a indiqué le personnage principal de la résolution est le Resolver 
 Ces trois acteurs sont très hiérachiques :
 - les **root servers** en haut
 - les **TLD servers** au milieu
-- le **serveur d'autorité** en bas
+- le **serveur faisant autorité** en bas
 
 Chacun va renvoyer au suivant, de façon très administrative, sans avoir plus d'informations.
 
@@ -58,21 +59,21 @@ Chacun va renvoyer au suivant, de façon très administrative, sans avoir plus d
 
 ### 1.1.3. Que savent ils chacun ?
 
-Partons d'en bas, le serveur d'autorité pour notre exemple `mbr-me.readresolve.tech` est un serveur DNS d'OVH qui va contenir tous les associations domaine <-> IP des sites hébergés chez eux.
-Pour trouver ce serveur d'autorité, un TLD server contient l'information de ce serveur d'autorité (parmi plein d'autres).
+Partons d'en bas, le serveur faisant autorité pour notre exemple `mbr-me.readresolve.tech` est un serveur DNS d'OVH. Il contient toutes les **associations domaine <-> IP** des sites hébergés chez eux.
+Pour trouver ce serveur faisant autorité, un TLD server contient l'information de ce serveur (parmi plein d'autres).
 Et pour trouver le serveur TLD, il faut solliciter un root serveur.
 
 ### 1.1.4. L'orchestration du resolver
 
 Ainsi, quand le DNS Resolver recoit `mbr-me.readresolve.tech`, il ne sait évidemment pas que c'est chez OVH, il n'a que ce nom de domaine.
-Par contre il connait la procédure :
 
-1.  le resolver doit d'abord solliciter les "patrons" : les root servers. Il leur dit "Alors là je cherche les responsables des `.tech`
+Par contre il connait la procédure :
+1.  le resolver doit d'abord solliciter les "patrons" : les root servers. Il leur dit "Alors là je cherche les responsables des `.tech`"
 2.  le root serveur le plus rapide lui répond "le responsables des .tech c'est le serveur TLD `ns01.trs-dns.com`"
-3.  le resolveur sollicite donc le serveur TLD `ns01.trs-dns.com` : Qui s'occupe de `readresolve` ? (ou qui est le serveur d'autorité)
-4.  le serveur TLD `ns01.trs-dns.com` répond: "Ah le serveur d'autorité pour `readresolve` c'est `ns13.ovh.net`"
-5.  le resolveur sollicite donc le serveur d'autorité `ns13.ovh.net` et demande "Tu dois connaitre l'IP de mbr-me.readresolve.tech, c'est ton boulot"
-6.  et enfin le serveur d'autorité donne l'IP du serveur qui héberge : `54.36.100.8` :sweat_smile:
+3.  le resolveur sollicite donc le serveur TLD `ns01.trs-dns.com` : Qui s'occupe de `readresolve` ? (ou qui est le serveur faisant autorité)
+4.  le serveur TLD `ns01.trs-dns.com` répond: "Ah le serveurfaisant autorité pour `readresolve` c'est `ns13.ovh.net`"
+5.  le resolveur sollicite donc le serveur faisant autorité `ns13.ovh.net` et demande "Tu dois connaitre l'IP de mbr-me.readresolve.tech, c'est ton boulot"
+6.  et enfin le serveur faisant autorité donne l'IP du serveur qui héberge : `54.36.100.8` :sweat_smile:
 
 [Schema Résolution DNS](../excalidraw/1-dns-lookup/1-5-dns-lookup.excalidraw)
 
@@ -80,12 +81,12 @@ Par contre il connait la procédure :
 
 Quatre rôles à distinguer :
 
-| Rôle                   | Question à laquelle il répond             | L'acteur                                                           |
-| ---------------------- | ----------------------------------------- | ------------------------------------------------------------------ |
-| **Résolveur récursif** | Aucune, il trouve ceux qui répondent      | FAI                                                                |
-| **Root**               | « Qui gère ce TLD ? »                     | 13 identités **A** à **M**, des milliers d’instances dans le monde |
-| **TLD**                | « Qui est autoritaire pour ce domaine ? » | `.tech` → `ns01.trs-dns.com`, …                                    |
-| **Autoritaire**        | « Quelle est l'ip pour ce nom ? »         | `dns13.ovh.net` / `ns13.ovh.net`                                   |
+| Rôle                   | Question à laquelle il répond             | Réponse dans notre exemple                                      | L'acteur                                                           |
+| ---------------------- | ----------------------------------------- | ------------------------------------------------------------------------ | ------------------------------------------------------------------ |
+| **Résolveur récursif** | Aucune, il trouve ceux qui répondent      | - | Le resolver du FAI                                                 |
+| **Root**               | « Qui gère ce TLD ? »                     | `ns01.trs-dns.com`                   | 13 identités **A** à **M**, des milliers d’instances dans le monde |
+| **TLD**                | « Qui est autoritaire pour ce domaine ? » | `dns13.ovh.net`          | `.tech` → `ns01.trs-dns.com`, …                                    |
+| **Autoritaire**        | « Quelle est l'ip pour ce nom ? »         | 54.36.100.9                                | `dns13.ovh.net` / `ns13.ovh.net`                                   |
 
 Le serveur root **ne connaît pas** l’IP de `readresolve.tech`. Il sait seulement où sont les serveurs `.tech`. Le TLD **ne connaît pas** forcément l’IP non plus : il pointe vers les serveurs faisant autorité.
 
@@ -147,11 +148,12 @@ readresolve.tech.       3600    IN      RRSIG   A 8 2 3600 20260911054305 202608
 
 ## 1.3. Cache
 
-Maintenant revenons un peu sur notre cas particulier : nouvel appartement, nouvel ordinateur, nouveau site.
+Maintenant revenons sur notre hypothèse : nouvel appartement, nouvel ordinateur, nouveau site.
 
 En vrai, la résolution DNS prend des raccourci. Pour quasi chaque intervenant, navigateur, OS, resolveur, les serveurs DNS, ils ont un cache qui peut contenir l'information et permettre d'éviter des étapes.
 
-Le cache **accélère** (moins de allers-retours) et **soulage** les serveurs root et les TLD. Contrepartie : une modification DNS n’est pas visible partout au même moment.
+Le cache **accélère** (moins de allers-retours) et **soulage** les dispositifs comme les serveurs root et les TLD. Des informations intermédiaires sont stockés au différents stades de la résolution, permettant de ne pas toujours refaire la requête DNS
+Contrepartie : une modification DNS n’est pas visible partout au même moment.
 
 ## Transition
 
