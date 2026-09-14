@@ -1,24 +1,22 @@
 # 5. Configuration du VPS
 
-Nos données ont traversé le DNS, routage et l'infrastructure OVH (étape 4). Il arrive enfin sur **notre** machine.
+Nos données ont traversé le DNS, routage et l'infrastructure OVH. Il arrive enfin sur **notre** machine.
 
-Avant de rentrer dans le VPS, un peu de théorie.
+Avant de rentrer dans le VPS, on a besoin d'un peu de théorie.
 
 ## Théorie
 
 ### Ports — le numéro d'appartement
 
-Un **port** est un numéro (0–65 535) qui identifie un service sur une machine. 
+On connait et on visualise bien ce que sont les ports physiques : USB, HDMI, VGA ou Ethernet.
 
-L'IP seule désigne **le bâtiment** (le serveur) :
-- le port désigne **l'appartement** dans ce bâtiment.
-- les personnes dans les appartements les services
+Il existe aussi les ports logiques. Il ne sont pass palpables et sont représentés par des nombres de 0 à 65 535
 
-> **Analogie** : le facteur (Internet) livre un colis au **54 rue de Beaune** (l'IP `54.36.100.9`). Il regarde ensuite le **numéro d'appartement** sur l'étiquette pour savoir **à quelle porte** frapper. Port **22** → appartement SSH (souvent), port **443** → appartement HTTPS, etc.
+On peut les diviser en trois grandes catégories :
 
-Sans numéro de port, le paquet arrive au bâtiment mais personne ne sait à qui il est destiné.
-
-#### Trois plages de ports
+- les ports systèmes
+- les ports enregistrés
+- les ports dynamiques ou privés
 
 [Schéma types de ports](../excalidraw/5-vps-configuration/5-1-ports-type.excalidraw)
 
@@ -27,8 +25,6 @@ Sans numéro de port, le paquet arrive au bâtiment mais personne ne sait à qui
 | **0 – 1 023**       | _Well-known ports_ (ports système)          | Réservés aux services **standard**, connus de tous. Nécessitent souvent des droits admin.                                        | 22 (SSH), 80 (HTTP), 443 (HTTPS), 53 (DNS)         |
 | **1 024 – 49 151**  | _Registered ports_ (ports enregistrés)      | Attribués à des **services spécifiques** par l'IANA, mais pas « système ».                                                       | 3306 (MySQL), 5432 (PostgreSQL), 8080 (proxy HTTP) |
 | **49 152 – 65 535** | _Dynamic / private ports_ (ports éphémères) | Utilisés **temporairement** par le système pour les connexions sortantes du client. Jamais configurés manuellement côté serveur. | Choisis à la volée par l'OS                        |
-
-En théorie, un serveur web expose surtout les well-known **80** et **443**. Le SSH est souvent sur **22**, mais on peut le déplacer — on verra ce que **notre** VPS fait vraiment en pratique.
 
 ### Socket — l'adresse complète de livraison
 
@@ -40,13 +36,16 @@ Un port seul ne suffit pas. Pour qu'une connexion existe, il faut trois informat
 
 L'ensemble forme une **socket** : `TCP 54.36.100.9:443`.
 
+[Schéma socket éclatée](../excalidraw/5-vps-configuration/5-2-socket-splitted.excalidraw)
+
+
+
 [Schéma socket](../excalidraw/5-vps-configuration/5-3-socket-analogy.excalidraw)
 
 > **Analogie** : une adresse postale complète, c'est **le bâtiment** (IP) + **l'appartement** (port) + **le mode de livraison** (recommandé = TCP, simple dépôt boîte aux lettres = UDP). Sans l'un des trois, la livraison échoue ou arrive au mauvais endroit.
 
 Un service **à l'écoute** (_listening socket_) : un process a dit au système « les paquets pour **cette socket**, c'est pour moi ». `ss` / `netstat` listent ces sockets.
 
-[Schéma socket éclatée](../excalidraw/5-vps-configuration/5-2-socket-splitted.excalidraw)
 
 **Interface** :
 
@@ -59,61 +58,59 @@ D'où : tout n'est pas exposé. Un backend sur `127.0.0.1:8080` n'est pas « un 
 
 ### Proxy et Reverse Proxy
 
-Les deux sont des **intermédiaires** entre un client et un serveur. La différence : **qui** les place et **de quel côté**.
+Qu’est-ce qu’un proxy, au juste ? Voyons cela.
 
-#### Proxy forward — côté client
+Deux types courants de proxy sont le **forward proxy** et le **reverse proxy**.
 
-Le **client** passe par un intermédiaire pour **sortir**. Le serveur de destination ne voit pas l'IP réelle du poste (ou pas directement).
+####  Forward proxy
 
-```
-                      ┌──────────┐
-  Poste A ──────────► │  Proxy   │ ──────────► Serveur web
-  Poste B ──────────► │ (sortie) │             (google.com)
-  Poste C ──────────► │          │
-                      └──────────┘
-          Réseau interne           Internet
-```
+Un forward proxy est un serveur placé entre un groupe de machines clientes et Internet. Quand ces clients envoient des requêtes vers des sites, le forward proxy joue le rôle d’intermédiaire : il intercepte ces requêtes et parle aux serveurs web **au nom** de ces machines clientes.
 
-> **Analogie** : un assistant qui va chercher le courrier **à la place** des employés. L'extérieur ne voit que l'assistant, pas qui a demandé quoi.
+**Pourquoi voudrait-on faire ça ?**
 
-Usages : entreprise, VPN, filtrage de navigation.
+1. Protéger l’identité en ligne du client
 
-#### Reverse proxy — côté serveur (notre cas)
+En se connectant à un site via un forward proxy, l’adresse IP du client est masquée au serveur. Seule l’IP du proxy est visible. Il est plus difficile de remonter jusqu’au client.
 
-L'intermédiaire est **devant nos applis**. Le **navigateur** ne parle **qu'à** lui. Les backends restent cachés.
+2. Contourner des restrictions de navigation
 
-```
-                                     ┌───────────────────┐
-  Clients Internet                   │      VPS          │
-        │                            │                   │
-        │  HTTPS (port 443, public)  │  ┌─────────────┐  │
-        ▼                            │  │   Apache     │  │
-  ──────────────────────────────────►│  │  frontend    │  │
-                                     │  │ (rev. proxy) │  │
-                                     │  └──────┬───────┘  │
-                                     │         │          │
-                                     │    HTTP local      │
-                                     │   (127.0.0.1)      │
-                                     │         │          │
-                                     │  ┌──────▼───────┐  │
-                                     │  │   Apache     │  │
-                                     │  │  backend     │  │
-                                     │  │  (appli)     │  │
-                                     │  └──────────────┘  │
-                                     └───────────────────┘
-```
+Des institutions (États, écoles, grandes entreprises) utilisent des firewalls pour limiter l’accès à Internet. En se connectant à un forward proxy situé *hors* de ces firewalls, le client peut parfois contourner ces restrictions.
 
-> **Analogie** : l'accueil d'un immeuble de bureaux. Le visiteur (client) ne monte pas directement dans les étages (backends). Il passe par l'accueil (reverse proxy) qui le redirige vers le bon bureau.
+Cela ne fonctionne pas toujours : le firewall peut aussi bloquer les connexions vers le proxy.
 
-Le client ne connaît pas le port du backend, ni son nom interne. Il connaît `readresolve.tech` et le 443 du frontend.
+3. Bloquer l’accès à certains contenus
 
-#### Pourquoi un reverse proxy
+Les écoles et les entreprises configurent souvent le réseau pour que tous les clients passent par un proxy, avec des règles de filtrage (réseaux sociaux, etc.).
 
-- **Un** point d'entrée (TLS, nom, logs) pour plusieurs applis derrière.
-- Le backend n'a pas à être joignable du monde : moins de surface d'attaque.
-- Le proxy peut répartir, filtrer des chemins, servir des fichiers statiques.
+Un forward proxy exige en général que le client configure son application pour le pointer. Les grandes institutions utilisent souvent un **transparent proxy** pour simplifier cela.
 
-Sans reverse proxy, chaque backend public = un port (ou une IP) de plus à ouvrir et à durcir. Avec : **un** Apache public, le reste en localhost.
+**En résumé :** un forward proxy se place entre le client et Internet, et agit **au nom du client**.
+
+#### Reverse proxy
+
+Un reverse proxy se place entre Internet et les serveurs web. Il intercepte les requêtes des clients et parle aux serveurs web **à leur place**.
+
+**Pourquoi un site utiliserait-il un reverse proxy ?**
+
+1. Protéger le site
+
+Les adresses IP du site sont cachées derrière le reverse proxy et ne sont pas révélées aux clients. Il devient plus difficile de cibler le site avec une attaque DDoS.
+
+2. Load balancing
+
+Un site très fréquenté ne peut généralement pas tout gérer avec un seul serveur. Le reverse proxy répartit les requêtes entrantes sur un parc de serveurs web, pour éviter qu’un seul d’entre eux ne sature.
+
+Cela suppose que le reverse proxy lui-même tienne la charge. Des services comme Cloudflare déploient des reverse proxies dans des centaines de lieux dans le monde : plus proches des utilisateurs, et avec une grande capacité de traitement.
+
+3. Mettre en cache le contenu statique
+
+Un contenu peut rester en cache sur le reverse proxy pendant un certain temps. Si la même ressource est redemandée, la copie locale peut être renvoyée rapidement.
+
+4. Gérer le chiffrement SSL
+
+Le SSL handshake est coûteux en calcul. Le reverse proxy décharge les origin servers de ces opérations. Au lieu de gérer le SSL pour tous les clients, le site n’a plus qu’à gérer les SSL handshakes avec un petit nombre de reverse proxies.
+
+
 
 ### Firewall — filtre de paquets
 
@@ -126,7 +123,7 @@ Deux couches utiles à distinguer (étape 4 vs ici) :
 | **Edge Network Firewall**        | Bordure du réseau OVH, **avant** le VPS | Console OVH (quelques règles) |
 | **Firewall du VPS** (`iptables`) | **Sur** la machine                      | Nous (`root`)                 |
 
-L'infra OVH protège le réseau en amont, mais elle ne connaît pas **toute** notre politique locale. Sans filtre sur le VPS, **tout port** où un process écoute (et que l'Edge laisse passer) est joignable.
+
 
 #### Sens du filtrage (`iptables`)
 
