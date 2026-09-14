@@ -1,18 +1,33 @@
 # Intro
 
-## Evocation du cas d'étude
+## D'un nom de domaine à une page web
 
-Avec Raphaël, Jonathan et Rayann on avait déjà parler du navigateur web et de son fonctionnement, cette fois on a essayer de vous montrer plus en détail comment à partir d’un simple url, on obtient un site web, on va essayer de vous faire comprendre les différents étapes et éléments qui interviennent à chaque fois qu'on consulte un site web.
+Lorsque nous saisissons une URL dans notre navigateur, une page web apparaît généralement en quelques instants.
 
-On va s'appuyer sur le VPS de la formation pour expérimenter au fur et à mesure. On essaiera d'aérer chaque partie un peu théorique par un peu de pratique.
+Mais que s'est-il passé entre le moment où nous avons tapé cette adresse et celui où le serveur nous a renvoyé la page ?
 
-Première expérience de notre voyage :
+Derrière cette action très simple se cache une succession de systèmes, de protocoles et de configurations. 
+L'objectif est de comprendre ce voyage, de la saisie de l'URL jusqu'à l'affichage de la page web.
 
-Accédons à la page `https://mbr-raphael.readresolve.tech`
+## Le cas d'étude
+
+Pour rendre cette exploration concrète, nous allons nous appuyer sur le VPS mis à disposition dans le cadre de la formation.
+
+Nous allons suivre une requête réelle vers un site que nous hébergeons :
+
+`https://mbr-raphael.readresolve.tech`
+
+À chaque étape, nous alternerons entre :
+
+- **Comprendre** les notions théoriques nécessaires.
+- **Observer** ce qui se passe réellement sur Internet ou sur notre infrastructure.
+- **Expérimenter** avec des outils comme `curl`, `dig`, `ss` ou les commandes disponibles sur notre VPS.
+
+L'objectif n'est pas seulement de savoir qu'un site fonctionne, mais de comprendre pourquoi il fonctionne et où intervenir lorsqu'il ne fonctionne plus.
 
 ## Explications globales des étapes
 
-Schéma Architecture, avec grands domaines /responsabilités : : [0-introduction](../excalidraw/0-introduction.excalidraw)
+Schéma Architecture, avec grands domaines /responsabilités : [0-introduction](../excalidraw/0-introduction.excalidraw)
 
 - Internet
 - OVH
@@ -25,6 +40,8 @@ On va découper ce voyage en 5 étapes :
 3. **Routage** — comment les données trouvent le chemin jusqu'au VPS
 4. **Infrastructure OVH** - de même le chemin mais aussi les sécurités dans OVH
 5. **Configuration du VPS : Ports et Apache** : enfin l'arrivée dans le VPS et la configuration que l'on gère
+
+
 
 ## Questions directrices
 
