@@ -33,9 +33,10 @@ Dans `mbr-me.readresolve.tech`, on a plusieurs parties :
 
 Illustrons cela avec Google et ses services.
 
+[!google-hostname-example](../img/1-google-hostname-example.png)
 [Schema Arbre Url](../excalidraw/1-dns-lookup/1-2-url-tree.excalidraw)
 
-On a cet arbre avec
+On a cet arbre avec :
 
 - en haut le root,
 - puis `.com` le TLD ici.
@@ -65,13 +66,13 @@ Et pour trouver le serveur TLD, il faut solliciter un root serveur.
 
 Ainsi, quand le DNS Resolver recoit `mbr-me.readresolve.tech`, il ne sait évidemment pas que c'est chez OVH, il n'a que ce nom de domaine.
 Par contre il connait la procédure :
- 1. le resolver doit d'abord solliciter les "patrons" : les root servers. Il leur dit "Alors là je cherche les responsables des `.tech`
- 2. le root serveur le plus rapide lui répond "le responsables des .tech c'est le serveur TLD `ns01.trs-dns.com`"
- 3. le resolveur sollicite donc le serveur TLD `ns01.trs-dns.com` : Qui s'occupe de `readresolve` ? (ou qui est le serveur d'autorité)
- 4. le serveur TLD `ns01.trs-dns.com` répond: "Ah le serveur d'autorité pour `readresolve` c'est `ns13.ovh.net`"
- 5. le resolveur sollicite donc le serveur d'autorité `ns13.ovh.net` et demande "Tu dois connaitre l'IP de mbr-me.readresolve.tech, c'est ton boulot"
- 6. et enfin le serveur d'autorité donne l'IP du serveur qui héberge : `54.36.100.8` :sweat_smile: 
 
+1.  le resolver doit d'abord solliciter les "patrons" : les root servers. Il leur dit "Alors là je cherche les responsables des `.tech`
+2.  le root serveur le plus rapide lui répond "le responsables des .tech c'est le serveur TLD `ns01.trs-dns.com`"
+3.  le resolveur sollicite donc le serveur TLD `ns01.trs-dns.com` : Qui s'occupe de `readresolve` ? (ou qui est le serveur d'autorité)
+4.  le serveur TLD `ns01.trs-dns.com` répond: "Ah le serveur d'autorité pour `readresolve` c'est `ns13.ovh.net`"
+5.  le resolveur sollicite donc le serveur d'autorité `ns13.ovh.net` et demande "Tu dois connaitre l'IP de mbr-me.readresolve.tech, c'est ton boulot"
+6.  et enfin le serveur d'autorité donne l'IP du serveur qui héberge : `54.36.100.8` :sweat_smile:
 
 [Schema Résolution DNS](../excalidraw/1-dns-lookup/1-5-dns-lookup.excalidraw)
 
@@ -79,12 +80,12 @@ Par contre il connait la procédure :
 
 Quatre rôles à distinguer :
 
-| Rôle                   | Question à laquelle il répond               | L'acteur                                                           |
-| ---------------------- | ------------------------------------------- | ------------------------------------------------------------------ |
-| **Résolveur récursif** | Aucune, il trouve ceux qui répondent        | FAI                                                                |
-| **Root**               | « Qui gère ce TLD ? »                       | 13 identités **A** à **M**, des milliers d’instances dans le monde |
-| **TLD**                | « Qui est autoritaire pour ce domaine ? »   | `.tech` → `ns01.trs-dns.com`, …                                    |
-| **Autoritaire**        | « Quelle est l'ip pour ce nom ? »           | `dns13.ovh.net` / `ns13.ovh.net`                                   |
+| Rôle                   | Question à laquelle il répond             | L'acteur                                                           |
+| ---------------------- | ----------------------------------------- | ------------------------------------------------------------------ |
+| **Résolveur récursif** | Aucune, il trouve ceux qui répondent      | FAI                                                                |
+| **Root**               | « Qui gère ce TLD ? »                     | 13 identités **A** à **M**, des milliers d’instances dans le monde |
+| **TLD**                | « Qui est autoritaire pour ce domaine ? » | `.tech` → `ns01.trs-dns.com`, …                                    |
+| **Autoritaire**        | « Quelle est l'ip pour ce nom ? »         | `dns13.ovh.net` / `ns13.ovh.net`                                   |
 
 Le serveur root **ne connaît pas** l’IP de `readresolve.tech`. Il sait seulement où sont les serveurs `.tech`. Le TLD **ne connaît pas** forcément l’IP non plus : il pointe vers les serveurs faisant autorité.
 
