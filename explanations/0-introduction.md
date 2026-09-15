@@ -17,6 +17,8 @@ Nous allons suivre une requête réelle vers un site que nous hébergeons :
 
 `https://mbr-raphael.readresolve.tech`
 
+Vous pouvez remplacer raphael par votre username sur le VPS.
+
 À chaque étape, nous alternerons entre :
 
 - **Comprendre** les notions théoriques nécessaires.
